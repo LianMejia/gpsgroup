@@ -26,10 +26,18 @@
         <span class="title fw-bold">Visualizador</span>
         <button id="login" class="btn" style="visibility: hidden;">Iniciar sesión</button>
     </div>
+    <button id="toggleSidenav" class="btn sidenav-toggle">
+        ◀
+    </button>
     <div id="sidebar">
         <div id="tree"></div>
     </div>
     <div id="preview"></div>
+    <div id="sidenav" class="collapsed">
+        <!-- Contenido de tu nueva barra lateral derecha -->
+        <h4>Propiedades</h4>
+        <!-- Aquí puedes agregar tu contenido específico -->
+    </div>
     <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
     <script src="https://unpkg.com/inspire-tree@4.3.1/dist/inspire-tree.js"></script>

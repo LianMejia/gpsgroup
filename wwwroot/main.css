@@ -110,3 +110,74 @@ body, html {
     background-image: url(https://www.svgrepo.com/show/373623/git.svg);
     background-size: cover;
 }
+
+#sidenav {
+    position: fixed;
+    right: -300px;
+    top: 4em;
+    bottom: 0;
+    width: 300px;
+    background: white;
+    z-index: 999;
+    transition: all 0.3s ease;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    padding: 1em;
+    overflow-y: auto;
+}
+
+#sidenav.active {
+    right: 0;
+}
+
+.sidenav-toggle {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    transition: all 0.3s ease;
+    background: white;
+    border: 1px solid #ddd;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.sidenav-toggle:hover {
+    background: #f0f0f0;
+}
+
+#sidenav.active + .sidenav-toggle {
+    right: 320px;
+    transform: translateY(-50%) rotate(180deg);
+}
+#preview {
+    right: 0;
+    transition: all 0.3s ease;
+}
+
+#sidenav.active ~ #preview {
+    right: 300px;
+}
+
+@media (max-width: 768px) {
+    #sidenav {
+        width: 80%;
+        right: -80%;
+    }
+    
+    #sidenav.active {
+        right: 0;
+    }
+    
+    #sidenav.active ~ #preview {
+        right: 80%;
+    }
+    
+    #sidenav.active + .sidenav-toggle {
+        right: calc(80% + 20px);
+    }
+}

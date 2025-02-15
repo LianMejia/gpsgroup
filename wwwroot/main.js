@@ -19,6 +19,28 @@ try {
         }
         const viewer = await initViewer(document.getElementById('preview'));
         initTree('#tree', (id) => loadModel(viewer, window.btoa(id).replace(/=/g, '')));
+        const sidenavToggle = document.getElementById('toggleSidenav');
+const sidenav = document.getElementById('sidenav');
+const preview = document.getElementById('preview');
+
+sidenavToggle.addEventListener('click', () => {
+    sidenav.classList.toggle('active');
+    preview.classList.toggle('sidenav-active');
+    
+    // Rotar el ícono del botón
+    sidenavToggle.style.transform = sidenav.classList.contains('active') 
+        ? 'rotate(180deg)'
+        : 'rotate(0deg)';
+});
+
+// Cerrar al hacer click fuera
+document.addEventListener('click', (e) => {
+    if (!sidenav.contains(e.target) && !sidenavToggle.contains(e.target)) {
+        sidenav.classList.remove('active');
+        preview.classList.remove('sidenav-active');
+        sidenavToggle.style.transform = 'rotate(0deg)';
+    }
+});
     } else {
         login.innerText = 'Login';
         login.onclick = () => window.location.replace('/api/auth/login');
