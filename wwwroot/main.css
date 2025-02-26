@@ -1,183 +1,279 @@
 /* Estilo del scrollbar */
 ::-webkit-scrollbar {
-    width: 5px; /* Prueba con un tamaño más notable */
-    height: 5px;
+  width: 5px; /* Prueba con un tamaño más notable */
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-    background: transparent;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: gray;
-    border-radius: 5px;
+  background: gray;
+  border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: darkgray;
+  background: darkgray;
 }
 
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-    font-family: ArtifaktElement;
-    font-size: 14px;
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  font-family: ArtifaktElement;
+  font-size: 14px;
 }
 
-#header, #sidebar, #preview {
-    position: absolute;
+#header,
+#sidebar,
+#preview {
+  position: absolute;
 }
 
 #header {
-    height: 4em;
-    width: 100%;
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-between;
-    align-items: center;
+  height: 4em;
+  width: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
 }
 
 #sidebar {
-    width: 20%;
-    left: 0;
-    top: 4em;
-    bottom: 0;
-    overflow-y: scroll;
+  width: 20%;
+  left: 0;
+  top: 4em;
+  bottom: 0;
+  overflow-y: scroll;
 }
 
 #preview {
-    width: 80%;
-    right: 0;
-    top: 4em;
-    bottom: 0;
+  width: 80%;
+  right: 0;
+  top: 4em;
+  bottom: 0;
 }
 
 #header > * {
-    height: 2em;
-    margin: 0 0.5em;
+  height: 2em;
+  margin: 0 0.5em;
 }
 
 #login {
-    font-family: ArtifaktElement;
-    font-size: 1em;
+  font-family: ArtifaktElement;
+  font-size: 1em;
 }
 
 #header .title {
-    height: auto;
-    margin-right: auto;
+  height: auto;
+  margin-right: auto;
 }
 
 #tree {
-    margin: 0.5em;
+  margin: 0.5em;
 }
 
 @media (max-width: 768px) {
-    #sidebar {
-        width: 100%;
-        top: 3em;
-        bottom: 75%;
-    }
-    #preview {
-        width: 100%;
-        top: 25%;
-        bottom: 0;
-    }
+  #sidebar {
+    width: 100%;
+    top: 3em;
+    bottom: 75%;
+  }
+  #preview {
+    width: 100%;
+    top: 25%;
+    bottom: 0;
+  }
 }
 
 .icon-hub:before {
-    background-image: url(https://www.svgrepo.com/show/29728/app.svg); /* or https://raw.githubusercontent.com/primer/octicons/main/icons/stack-16.svg */
-    background-size: cover;
+  background-image: url(https://www.svgrepo.com/show/29728/app.svg); /* or https://raw.githubusercontent.com/primer/octicons/main/icons/stack-16.svg */
+  background-size: cover;
 }
 
 .icon-project:before {
-    
-    background-image: url(https://www.svgrepo.com/show/392016/marketing-office-project.svg); /* or https://raw.githubusercontent.com/primer/octicons/main/icons/organization-16.svg */
-    background-size: cover;
+  background-image: url(https://www.svgrepo.com/show/392016/marketing-office-project.svg); /* or https://raw.githubusercontent.com/primer/octicons/main/icons/organization-16.svg */
+  background-size: cover;
 }
 
 .icon-my-folder:before {
-    background-image: url(https://upload.wikimedia.org/wikipedia/commons/a/a1/Icons8_flat_folder.svg);
-    background-size: cover;
+  background-image: url(https://upload.wikimedia.org/wikipedia/commons/a/a1/Icons8_flat_folder.svg);
+  background-size: cover;
 }
 
 .icon-item:before {
-    background-image: url(https://www.svgrepo.com/show/528250/file-text.svg);
-    background-size: cover;
+  background-image: url(https://www.svgrepo.com/show/528250/file-text.svg);
+  background-size: cover;
 }
 
 .icon-version:before {
-    background-image: url(https://www.svgrepo.com/show/373623/git.svg);
-    background-size: cover;
+  background-image: url(https://www.svgrepo.com/show/373623/git.svg);
+  background-size: cover;
 }
 
 #sidenav {
-    position: fixed;
-    right: -300px;
-    top: 4em;
-    bottom: 0;
-    width: 300px;
-    background: white;
-    z-index: 999;
-    transition: all 0.3s ease;
-    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
-    padding: 1em;
-    overflow-y: auto;
+  position: fixed;
+  right: -300px;
+  top: 4em;
+  bottom: 0;
+  width: 300px;
+  background: white;
+  z-index: 999;
+  transition: all 0.3s ease;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  padding: 1em;
+  overflow-y: auto;
 }
 
 #sidenav.active {
-    right: 0;
+  right: 0;
 }
 
 .sidenav-toggle {
-    position: fixed;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 1000;
-    transition: all 0.3s ease;
-    background: white;
-    border: 1px solid #ddd;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  transition: all 0.3s ease;
+  background: white;
+  border: 1px solid #ddd;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
 }
 
 .sidenav-toggle:hover {
-    background: #f0f0f0;
+  background: #f0f0f0;
 }
 
 #sidenav.active + .sidenav-toggle {
-    right: 320px;
-    transform: translateY(-50%) rotate(180deg);
+  right: 320px;
+  transform: translateY(-50%) rotate(180deg);
 }
 #preview {
-    right: 0;
-    transition: all 0.3s ease;
+  right: 0;
+  transition: all 0.3s ease;
 }
 
 #sidenav.active ~ #preview {
-    right: 300px;
+  right: 300px;
 }
 
 @media (max-width: 768px) {
-    #sidenav {
-        width: 80%;
-        right: -80%;
-    }
-    
-    #sidenav.active {
-        right: 0;
-    }
-    
-    #sidenav.active ~ #preview {
-        right: 80%;
-    }
-    
-    #sidenav.active + .sidenav-toggle {
-        right: calc(80% + 20px);
-    }
+  #sidenav {
+    width: 80%;
+    right: -80%;
+  }
+
+  #sidenav.active {
+    right: 0;
+  }
+
+  #sidenav.active ~ #preview {
+    right: 80%;
+  }
+
+  #sidenav.active + .sidenav-toggle {
+    right: calc(80% + 20px);
+  }
+}
+
+.nav-menu {
+  padding-left: 0.5rem;
+}
+
+/* Agregar efecto de desplazamiento hacia la izquierda para cada subnivel */
+.nav-item {
+  margin-bottom: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+.nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s, padding-left 0.2s;
+  border-radius: 4px;
+}
+
+.nav-header:hover {
+  background-color: #f5f5f5;
+}
+
+.nav-subitems {
+  display: none; /* Ocultar subelementos por defecto */
+  margin-left: 15px;
+}
+
+.nav-item.active .nav-subitems {
+  display: block; /* Mostrar subelementos cuando el item está activo */
+}
+
+/* Cada subnivel tendrá una separación adicional hacia la izquierda */
+.nav-item.level-1 .nav-header {
+  padding-left: 1.5rem;
+}
+
+.nav-item.level-2 .nav-header {
+  padding-left: 2.5rem;
+}
+
+.nav-item.level-3 .nav-header {
+  padding-left: 3.5rem;
+}
+
+.nav-subitem {
+  display: block;
+  padding: 0.4rem 1rem;
+  color: #666;
+  text-decoration: none;
+  font-size: 0.9em;
+}
+
+.nav-subitem:hover {
+  background-color: #f8f9fa;
+}
+
+.toggle-icon {
+  transition: transform 0.3s ease;
+  font-size: 0.8em;
+  margin-left: 1rem;
+}
+
+.nav-item.active .nav-subitems {
+  max-height: 500px; /* Ajustar según contenido */
+}
+
+.nav-item.active .toggle-icon {
+  transform: rotate(180deg);
+}
+
+/*  */
+
+#loadingSpinner.spinner {
+  border: 2px solid #f3f3f3; /* Reducir grosor del borde */
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  width: 20px; /* Tamaño más pequeño */
+  height: 20px;
+  animation: spin 1s linear infinite;
+  margin: 10px auto; /* Centrado horizontal con margen */
+  display: none;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
