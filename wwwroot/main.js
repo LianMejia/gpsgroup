@@ -2,8 +2,6 @@ import {
   initViewer,
   loadModel,
   setupSelectionHandler,
-  setupSelectionHandler2,
-  currentDocId,
   loadModel2,
 } from "./viewer.js";
 import {
@@ -31,9 +29,8 @@ try {
       };
     };
     const viewer = await initViewer(document.getElementById("preview"));
-    setupSelectionHandler(viewer);
 
-    setupSelectionHandler2(viewer, (docId) => {
+    setupSelectionHandler(viewer, (docId) => {
       console.log("El DOC-ID obtenido es:", docId);
     });
 
