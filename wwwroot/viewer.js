@@ -8,8 +8,49 @@ export function setupSelectionHandler(viewer, callback) {
   // Definimos los nombres de objetos que se puedan seleccionar
   const validTypeNames = ['PHC12-500'];
 
+
+  // Función para actualizar los atributos
+  function updateAttributesPanel(props) {
+    const atributosDiv = document.getElementById('atributos');
+    if (!atributosDiv) return;
+
+    // Extraer propiedades relevantes
+    const attributes = {
+      'Type Name': props.properties.find(p => p.displayName === 'Type Name')?.displayValue,
+  };
+
+    // Generar HTML de atributos
+    atributosDiv.innerHTML = `
+        <table class="attributes-table">
+            <thead>
+                <tr>
+                    <th>Atributo</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${Object.entries(attributes).map(([key, value]) => `
+                    <tr>
+                        <td class="attribute-key">${key}</td>
+                        <td class="attribute-value">${value || 'N/A'}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+  }
+
+
   viewer.addEventListener(Autodesk.Viewing.SELECTION_CHANGED_EVENT, (event) => {
     const selection = event.dbIdArray;
+
+    const atributosDiv = document.getElementById('atributos');
+    
+    if (selection.length === 0) {
+      if (atributosDiv) atributosDiv.innerHTML = ''; // Limpiar al deseleccionar
+      return;
+    }
+
     if (selection.length === 0) return;
 
     const dbId = selection[0];
@@ -20,7 +61,17 @@ export function setupSelectionHandler(viewer, callback) {
       )?.displayValue;
 
       // Se verifica si el typeName está en la lista de objetos válidos
-      if (!validTypeNames.includes(typeName)) return;
+      if (!validTypeNames.includes(typeName)) {
+        if (atributosDiv) atributosDiv.innerHTML = '';
+        return;
+      }
+
+      if (!validTypeNames.includes(typeName)) {
+        if (atributosDiv) atributosDiv.innerHTML = '';
+        return;
+      }
+
+      updateAttributesPanel(props); // Actualizar panel de atributos
 
       console.log('pasa el filtro de type name');
 

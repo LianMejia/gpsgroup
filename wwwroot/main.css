@@ -277,3 +277,58 @@ html {
     transform: rotate(360deg);
   }
 }
+
+
+
+#atributos {
+  padding: 15px;
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.attributes-header {
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #3498db;
+}
+
+.attributes-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+.attributes-table th {
+  background-color: #f8f9fa;
+  text-align: left;
+  padding: 12px 15px;
+  border-bottom: 2px solid #dee2e6;
+  font-weight: 600;
+  color: #495057;
+}
+
+.attributes-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #dee2e6;
+  vertical-align: top;
+}
+
+.attribute-key {
+  color: #6c757d;
+  white-space: nowrap;
+  width: 60%;
+}
+
+.attribute-value {
+  color: #2c3e50;
+  font-weight: 500;
+  width: 40%;
+}
+
+.attributes-table tr:last-child td {
+  border-bottom: none;
+}
