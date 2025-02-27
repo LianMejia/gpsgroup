@@ -34,13 +34,32 @@
     </div>
     <div id="preview"></div>
     <div id="sidenav" class="collapsed">
-        <div id="atributos">
-            <h3 class="attributes-header">Parámetros técnicos</h3>
-            <div id="attribute-items-container"></div>
+        <!-- Sección Atributos -->
+        <div class="sidenav-section">
+          <div class="section-header" data-section="atributos">
+            <span class="toggle-icon">▶</span>
+            <h4>Atributos</h4>
+          </div>
+          <div class="section-content" id="atributos">
+            <h3 class="attributes-header">El elemento no tiene atributos</h3>
+          </div>
         </div>
-        <div id="tree2"></div>
-        <div id="loadingSpinner" class="spinner"></div>
-    </div>
+      
+        <!-- Sección Fichas Técnicas -->
+        <div class="sidenav-section">
+          <div class="section-header" data-section="fichas">
+            <span class="toggle-icon">▶</span>
+            <h4>Fichas Técnicas</h4>
+          </div>
+          <div class="section-content" id="tree2-container">
+            <div id="no-fichas" class="no-content-message">
+                No hay fichas técnicas disponibles
+              </div>
+            <div id="tree2"></div>
+            <div id="loadingSpinner" class="spinner"></div>
+          </div>
+        </div>
+      </div>
 
     <div id="modelModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 999;">
         <div style="position: relative; margin: 50px auto; background: #fff; width: 80%; height: 80%;">

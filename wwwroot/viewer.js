@@ -183,6 +183,11 @@ export function setupSelectionHandler2(viewer, callback) {
 function clearTree() {
   if (tree2ContainerGlobal) {
     tree2ContainerGlobal.innerHTML = '';
+    // Mostrar mensaje de "No hay contenido" al limpiar
+    const noContentMsg = document.getElementById('no-fichas');
+    if (noContentMsg) {
+      noContentMsg.style.display = 'block';
+    }
     // Resetear estado de renderedIds
     tree2ContainerGlobal.dataset.renderedIds = '[]';
   }

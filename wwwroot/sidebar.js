@@ -96,6 +96,13 @@ export async function getVersions(hubId, projectId, itemId) {
 }
 
 export async function renderTree({ container, items, level = 0, viewer, docId, renderedIds = new Set() }) {
+  // Ocultar mensaje de "No hay contenido" si hay items
+  if (items.length > 0) {
+    const noContentMsg = container.parentElement.querySelector('.no-content-message');
+    if (noContentMsg) {
+      noContentMsg.style.display = 'none';
+    }
+  }
   await Promise.all(items.map(async (item) => {
     if (renderedIds.has(item.id)) return; // Evitar duplicados
     renderedIds.add(item.id);
