@@ -204,13 +204,68 @@ async function getAccessToken(callback) {
   }
 }
 
+class CustomToolExtension extends Autodesk.Viewing.Extension {
+  constructor(viewer, options) {
+    super(viewer, options);
+    this._group = null;
+    this._button = null;
+  }
+
+  load() {
+    console.log('CustomToolExtension se ha cargado');
+    return true;
+  }
+
+  unload() {
+    console.log('CustomToolExtension no se ha podido cargar');
+
+    // Limpiar recursos
+    if (this._button) {
+      this.removeToolbarButton();
+    }
+    return true;
+  }
+
+  onToolbarCreated(toolbar) {
+    // Creamos un grupo de botones adicional en el toolbar
+    this._group = new Autodesk.Viewing.UI.ControlGroup('custom-tool-group');
+
+    // Creamos el botón personalizado
+    this._button = new Autodesk.Viewing.UI.Button('my-custom-tool-button');
+    this._button.onClick = (ev) => {
+      alert('¡Botón personalizado clickeado!');
+    };
+    this._button.setToolTip('Mi herramienta personalizada');
+    this._button.addClass('custom-tool-icon'); // Clase CSS para el ícono
+
+    // Agregamos el botón al grupo
+    this._group.addControl(this._button);
+
+    // Agregamos el grupo a la barra de herramientas
+    toolbar.addControl(this._group);
+  }
+
+  removeToolbarButton() {
+    if (this._group && this._button) {
+      this._group.removeControl(this._button);
+      this._button = null;
+    }
+  }
+}
+
+// Registrar la nueva extensión
+Autodesk.Viewing.theExtensionManager.registerExtension(
+  'CustomToolExtension',
+  CustomToolExtension
+);
+
 export function initViewer(container) {
   return new Promise(function (resolve, reject) {
     Autodesk.Viewing.Initializer(
       { env: 'AutodeskProduction', getAccessToken },
       function () {
         const config = {
-          extensions: ['Autodesk.DocumentBrowser'],
+          extensions: ['Autodesk.DocumentBrowser', 'CustomToolExtension'],
         };
         const viewer = new Autodesk.Viewing.GuiViewer3D(container, config);
         viewer.start();
