@@ -398,4 +398,5 @@ html {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Se oculta la opcion de 'ver propiedades' en el toolbar */
 .adsk-viewing-viewer #toolbar-propertiesTool{display:none!important}

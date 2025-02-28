@@ -259,7 +259,7 @@ export function initTree(selector, viewer, onSelectionChanged) {
 
       if (result) {
         const documentoCierreObra = result.find((item) =>
-          item.text.includes('DOCUMENTOS DE CIERRE DE OBRA')
+          item.text.includes('DOCUMENTACION')
         );
 
         if (documentoCierreObra) {
