@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/main.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>GPS GROUP | Visualizador</title>
 </head>
 <style>
@@ -26,19 +26,21 @@
         <span class="title fw-bold">Visualizador</span>
         <button id="login" class="btn" style="visibility: hidden;">Iniciar sesión</button>
     </div>
-    <button id="toggleSidenav" class="btn sidenav-toggle">
-        ◀
-    </button>
     <div id="sidebar">
         <div id="tree"></div>
     </div>
     <div id="preview"></div>
     <div id="sidenav" class="collapsed">
+      <button id="toggleSidenav" class="btn sidenav-toggle">
+        <span class="material-icons">chevron_left</span>
+    </button>
+    
         <!-- Sección Atributos -->
         <div class="sidenav-section">
           <div class="section-header" data-section="atributos">
-            <span class="toggle-icon">▶</span>
+            <span class="material-icons">list_alt</span>
             <h4>Atributos</h4>
+            <span class="toggle-icon">▶</span>
           </div>
           <div class="section-content" id="atributos">
             <h3 class="attributes-header">El elemento no tiene atributos</h3>
@@ -48,8 +50,9 @@
         <!-- Sección Fichas Técnicas -->
         <div class="sidenav-section">
           <div class="section-header" data-section="fichas">
-            <span class="toggle-icon">▶</span>
+            <span class="material-icons">description</span>
             <h4>Fichas Técnicas</h4>
+            <span class="toggle-icon">▶</span>
           </div>
           <div class="section-content" id="tree2-container">
             <div id="no-fichas" class="no-content-message">
@@ -61,10 +64,13 @@
         </div>
       </div>
 
-    <div id="modelModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 999;">
-        <div style="position: relative; margin: 50px auto; background: #fff; width: 80%; height: 80%;">
-            <button id="closeModalBtn">Cerrar</button>
-        <div id="viewerContainer" style="width: 20%; height: 20%;"></div>
+    <div id="modelModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 999; border-radius: 8px;">
+        <div style="position: relative; margin: 50px auto; background: #fff; width: 80%; height: 80%; border-radius: 8px;">
+
+              <span id="closeModalBtn" class="btn material-icons">close</span>
+     
+              
+        <div id="viewerContainer" style="width: 20%; height: 20%; border-radius: 8px;"></div>
         </div>
     </div>
   

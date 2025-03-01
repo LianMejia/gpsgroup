@@ -1,58 +1,77 @@
-import { renderTree, result2Global, tree2ContainerGlobal } from "./sidebar.js";
+import { renderTree, result2Global, tree2ContainerGlobal } from './sidebar.js';
 
 // viewer.js
 export function setupSelectionHandler(viewer, callback) {
   let currentDocId = null;
-  const spinner = document.getElementById("loadingSpinner");
+  const spinner = document.getElementById('loadingSpinner');
 
   // Definimos los nombres/propiedades de objetos que se puedan seleccionar
-  const validTypePresentar = ["Si"];
+  const validTypePresentar = ['Si'];
 
   // Función para actualizar los atributos
   function updateAttributesPanel(props) {
-    const atributosDiv = document.getElementById("atributos");
-    if (!atributosDiv) return;
+    const atributosDiv = document.getElementById('atributos');
+    const noFichasDiv = document.getElementById('no-fichas');
+
+    if (!atributosDiv || !noFichasDiv) return;
 
     // Extraer propiedades relevantes
     const attributes = {
-        "Comments": props.properties.find((p) => p.displayName === "Comments")
+      Comments: props.properties.find((p) => p.displayName === 'Comments')
         ?.displayValue,
-        "DOC-ID": props.properties.find((p) => p.displayName === "DOC-ID")
+      'DOC-ID': props.properties.find((p) => p.displayName === 'DOC-ID')
         ?.displayValue,
     };
 
-    // Generar HTML de atributos
-    atributosDiv.innerHTML = `
-        <table class="attributes-table">
-            <thead>
-                <tr>
-                    <th>Atributo</th>
-                    <th>Valor</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${Object.entries(attributes)
-                  .map(
-                    ([key, value]) => `
-                    <tr>
-                        <td class="attribute-key">${key}</td>
-                        <td class="attribute-value">${value || "N/A"}</td>
-                    </tr>
-                `
-                  )
-                  .join("")}
-            </tbody>
-        </table>
+    // Verificar si hay atributos
+    const hasAttributes = Object.values(attributes).some(
+      (value) => value !== undefined && value !== null
+    );
+
+    if (hasAttributes) {
+      // Generar HTML de atributos
+      atributosDiv.innerHTML = `
+      <table class="attributes-table">
+        <thead>
+          <tr>
+            <th>Atributo</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${Object.entries(attributes)
+            .map(
+              ([key, value]) => `
+              <tr>
+                <td class="attribute-key">${key}</td>
+                <td class="attribute-value">${value || 'N/A'}</td>
+              </tr>
+            `
+            )
+            .join('')}
+        </tbody>
+      </table>
     `;
+      // Ocultar el mensaje de "No hay fichas técnicas disponibles" si hay atributos
+      noFichasDiv.style.display = 'none';
+    } else {
+      // Mostrar ambos mensajes si no hay atributos
+      atributosDiv.innerHTML = `<h3 class="attributes-header">El elemento no tiene atributos</h3>`;
+      noFichasDiv.style.display = 'block';
+    }
   }
 
   viewer.addEventListener(Autodesk.Viewing.SELECTION_CHANGED_EVENT, (event) => {
     const selection = event.dbIdArray;
 
-    const atributosDiv = document.getElementById("atributos");
+    const atributosDiv = document.getElementById('atributos');
+    const noFichasDiv = document.getElementById('no-fichas');
 
     if (selection.length === 0) {
-      if (atributosDiv) atributosDiv.innerHTML = ""; // Limpiar al deseleccionar
+      // Mostrar ambos mensajes si no hay selección
+      if (atributosDiv)
+        atributosDiv.innerHTML = `<h3 class="attributes-header">El elemento no tiene atributos</h3>`;
+      if (noFichasDiv) noFichasDiv.style.display = 'block';
       return;
     }
 
@@ -62,21 +81,27 @@ export function setupSelectionHandler(viewer, callback) {
 
     viewer.getProperties(dbId, (props) => {
       const typeName = props.properties.find(
-        (prop) => prop.displayName === "PRESENTAR"
+        (prop) => prop.displayName === 'PRESENTAR'
       )?.displayValue;
 
       // Se verifica si el typeName está en la lista de objetos válidos
       if (!validTypePresentar.includes(typeName)) {
-        if (atributosDiv) atributosDiv.innerHTML = "";
+        // Mostrar ambos mensajes si el objeto no es válido
+        if (atributosDiv)
+          atributosDiv.innerHTML = `<h3 class="attributes-header">El elemento no tiene atributos</h3>`;
+        if (noFichasDiv) noFichasDiv.style.display = 'block';
+        clearTree();
+        result2Global = null;
+        currentDocId = null;
         return;
       }
 
       updateAttributesPanel(props); // Actualizar panel de atributos
 
-      console.log("pasa el filtro de type name");
+      console.log('pasa el filtro de type name');
 
       const docId = props.properties.find(
-        (prop) => prop.displayName === "DOC-ID"
+        (prop) => prop.displayName === 'DOC-ID'
       )?.displayValue;
 
       if (docId) {
@@ -90,11 +115,11 @@ export function setupSelectionHandler(viewer, callback) {
 
           if (tree2ContainerGlobal && result2Global) {
             // Activar el contenedor padre
-            const navItem = tree2ContainerGlobal.closest(".nav-item");
+            const navItem = tree2ContainerGlobal.closest('.nav-item');
             if (navItem) {
-              navItem.classList.add("active");
+              navItem.classList.add('active');
             }
-            spinner.style.display = "block";
+            spinner.style.display = 'block';
             renderTree({
               container: tree2ContainerGlobal,
               items: result2Global,
@@ -102,18 +127,18 @@ export function setupSelectionHandler(viewer, callback) {
               docId: docId, // Usa el nuevo DOC-ID
             }).finally(() => {
               // Ocultar spinner y asegurar despliegue
-              spinner.style.display = "none";
+              spinner.style.display = 'none';
               if (navItem) {
-                navItem.classList.add("active");
-                navItem.querySelector(".nav-subitems").style.maxHeight = "none";
+                navItem.classList.add('active');
+                navItem.querySelector('.nav-subitems').style.maxHeight = 'none';
               }
             });
           } else {
-            console.warn("Datos de initTree no están listos aún.");
+            console.warn('Datos de initTree no están listos aún.');
           }
         }
       } else {
-        alert("El objeto seleccionado no tiene un DOC-ID para filtrar.");
+        alert('El objeto seleccionado no tiene un DOC-ID para filtrar.');
         currentDocId = null;
       }
     });
@@ -122,84 +147,26 @@ export function setupSelectionHandler(viewer, callback) {
 
 export let currentDocId = null;
 
-export function setupSelectionHandler2(viewer, callback) {
-  let currentDocId = null;
-  const spinner = document.getElementById("loadingSpinner");
-
-  viewer.addEventListener(Autodesk.Viewing.SELECTION_CHANGED_EVENT, (event) => {
-    const selection = event.dbIdArray;
-    if (selection.length === 0) return;
-
-    const dbId = selection[0];
-
-    viewer.getProperties(dbId, (props) => {
-      console.log("props.properties", props.properties);
-      const docId = props.properties.find(
-        (prop) => prop.displayName === "DOC-ID"
-      )?.displayValue;
-
-      if (docId) {
-        if (currentDocId !== docId) {
-          console.log(`Nuevo DOC-ID detectado: ${docId}`);
-          alert(`Nuevo DOC-ID detectado: ${docId}`);
-          currentDocId = docId;
-
-          if (callback) callback(docId);
-
-          clearTree();
-
-          if (tree2ContainerGlobal && result2Global) {
-            // Activar el contenedor padre
-            const navItem = tree2ContainerGlobal.closest(".nav-item");
-            if (navItem) {
-              navItem.classList.add("active");
-            }
-            spinner.style.display = "block";
-            renderTree({
-              container: tree2ContainerGlobal,
-              items: result2Global,
-              viewer: viewer,
-              docId: docId, // Usa el nuevo DOC-ID
-            }).finally(() => {
-              // Ocultar spinner y asegurar despliegue
-              spinner.style.display = "none";
-              if (navItem) {
-                navItem.classList.add("active");
-                navItem.querySelector(".nav-subitems").style.maxHeight = "none";
-              }
-            });
-          } else {
-            console.warn("Datos de initTree no están listos aún.");
-          }
-        }
-      } else {
-        alert("El objeto seleccionado no tiene un DOC-ID para filtrar.");
-        currentDocId = null;
-      }
-    });
-  });
-}
-
 function clearTree() {
   if (tree2ContainerGlobal) {
-    tree2ContainerGlobal.innerHTML = "";
+    tree2ContainerGlobal.innerHTML = '';
     // Mostrar mensaje de "No hay contenido" al limpiar
-    const noContentMsg = document.getElementById("no-fichas");
+    const noContentMsg = document.getElementById('no-fichas');
     if (noContentMsg) {
-      noContentMsg.style.display = "block";
+      noContentMsg.style.display = 'block';
     }
     // Resetear estado de renderedIds
-    tree2ContainerGlobal.dataset.renderedIds = "[]";
+    tree2ContainerGlobal.dataset.renderedIds = '[]';
   }
 }
 async function getAccessToken(callback) {
   try {
-    const resp = await fetch("/api/auth/token");
+    const resp = await fetch('/api/auth/token');
     if (!resp.ok) throw new Error(await resp.text());
     const { access_token, expires_in } = await resp.json();
     callback(access_token, expires_in);
   } catch (err) {
-    alert("Could not obtain access token. See the console for more details.");
+    alert('Could not obtain access token. See the console for more details.');
     console.error(err);
   }
 }
@@ -207,14 +174,14 @@ async function getAccessToken(callback) {
 export function initViewer(container) {
   return new Promise(function (resolve, reject) {
     Autodesk.Viewing.Initializer(
-      { env: "AutodeskProduction", getAccessToken },
+      { env: 'AutodeskProduction', getAccessToken },
       function () {
         const config = {
-          extensions: ["Autodesk.DocumentBrowser"],
+          extensions: ['Autodesk.DocumentBrowser'],
         };
         const viewer = new Autodesk.Viewing.GuiViewer3D(container, config);
         viewer.start();
-        viewer.setTheme("light-theme");
+        viewer.setTheme('light-theme');
         resolve(viewer);
       }
     );
@@ -226,51 +193,51 @@ export function loadModel(viewer, urn) {
     viewer.loadDocumentNode(doc, doc.getRoot().getDefaultGeometry());
   }
   function onDocumentLoadFailure(code, message) {
-    alert("Could not load model. See console for more details.");
+    alert('Could not load model. See console for more details.');
     console.error(message);
   }
   Autodesk.Viewing.Document.load(
-    "urn:" + urn,
+    'urn:' + urn,
     onDocumentLoadSuccess,
     onDocumentLoadFailure
   );
 }
 
-// Función para abrir el modal
+// Abrir modal
 function openModal() {
-  document.getElementById("modelModal").style.display = "block";
+  document.getElementById('modelModal').style.display = 'block';
 }
 
-// Función para cerrar el modal
+// Cerrar modal
 function closeModal() {
-  document.getElementById("modelModal").style.display = "none";
+  document.getElementById('modelModal').style.display = 'none';
 }
 
 export function loadModel2(viewer, urn) {
-  // Escuchar el evento de click en el botón de cierre
+  // Evento de click en botón de cierre
   document
-    .querySelector("#closeModalBtn")
-    .addEventListener("click", closeModal);
+    .querySelector('#closeModalBtn')
+    .addEventListener('click', closeModal);
 
   function onDocumentLoadSuccess(doc) {
-    // Abrir el modal cuando el modelo esté listo
+    // Abrimos el modal cuando el modelo esté listo
     openModal();
 
-    // Crear el visor en el contenedor adecuado dentro del modal
+    // Crear el visor en el contenedor dentro del modal
     Autodesk.Viewing.Initializer(
       {
-        env: "AutodeskProduction",
+        env: 'AutodeskProduction',
         getAccessToken,
       },
       function () {
         const options = {
           extensions: [
-            "Autodesk.Viewing.MarkupsCore",
-            "Autodesk.Viewing.MarkupsGui",
+            'Autodesk.Viewing.MarkupsCore',
+            'Autodesk.Viewing.MarkupsGui',
           ],
         };
         viewer = new Autodesk.Viewing.GuiViewer3D(
-          document.getElementById("viewerContainer")
+          document.getElementById('viewerContainer')
         );
         viewer.start();
         viewer.loadDocumentNode(doc, doc.getRoot().getDefaultGeometry());
@@ -279,13 +246,13 @@ export function loadModel2(viewer, urn) {
   }
 
   function onDocumentLoadFailure(code, message) {
-    alert("Could not load model. See console for more details.");
+    alert('Could not load model. See console for more details.');
     console.error(message);
   }
 
-  // Cargar el modelo desde Autodesk Forge
+  // Cargamos el modelo desde Autodesk Forge
   Autodesk.Viewing.Document.load(
-    "urn:" + urn,
+    'urn:' + urn,
     onDocumentLoadSuccess,
     onDocumentLoadFailure
   );

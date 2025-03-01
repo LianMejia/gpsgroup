@@ -77,19 +77,16 @@ try {
         }
       });
 
-    const sidenavToggle = document.getElementById('toggleSidenav');
-    const sidenav = document.getElementById('sidenav');
-    const preview = document.getElementById('preview');
-
-    sidenavToggle.addEventListener('click', () => {
-      sidenav.classList.toggle('active');
-      preview.classList.toggle('sidenav-active');
-
-      // Rotar el ícono del botón
-      sidenavToggle.style.transform = sidenav.classList.contains('active')
-        ? 'rotate(180deg)'
-        : 'rotate(0deg)';
-    });
+      document.getElementById('toggleSidenav').addEventListener('click', () => {
+        const sidenav = document.getElementById('sidenav');
+        const body = document.body;
+        
+        // Forzar repintado para activar la transición
+        void sidenav.offsetWidth;
+        
+        sidenav.classList.toggle('active');
+        body.classList.toggle('sidenav-active');
+      });
 
     document.querySelectorAll('.nav-header').forEach((header) => {
       header.addEventListener('click', () => {

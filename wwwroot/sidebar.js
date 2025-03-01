@@ -1,4 +1,4 @@
-import { loadModel2 } from "./viewer.js";
+import { loadModel2 } from './viewer.js';
 
 async function getJSON(url) {
   const resp = await fetch(url);
@@ -95,114 +95,169 @@ export async function getVersions(hubId, projectId, itemId) {
   );
 }
 
-export async function renderTree({ container, items, level = 0, viewer, docId, renderedIds = new Set() }) {
+function getFileExtension(filename) {
+  return filename.split('.').pop().toLowerCase();
+}
+
+export async function renderTree({
+  container,
+  items,
+  level = 0,
+  viewer,
+  docId,
+  renderedIds = new Set(),
+}) {
   // Ocultar mensaje de "No hay contenido" si hay items
   if (items.length > 0) {
-    const noContentMsg = container.parentElement.querySelector('.no-content-message');
+    const noContentMsg = container.parentElement.querySelector(
+      '.no-content-message'
+    );
     if (noContentMsg) {
       noContentMsg.style.display = 'none';
     }
   }
-  await Promise.all(items.map(async (item) => {
-    if (renderedIds.has(item.id)) return; // Evitar duplicados
-    renderedIds.add(item.id);
+  await Promise.all(
+    items.map(async (item) => {
+      if (renderedIds.has(item.id)) return; // Evitar duplicados
+      renderedIds.add(item.id);
 
-    if (item.text.includes(docId)) { // Si documento hace match con docId
-      const navItem = document.createElement('div');
-      navItem.classList.add('nav-item', `level-${level}`);
+      if (item.text.includes(docId)) {
+        // Si documento hace match con docId
+        const navItem = document.createElement('div');
+        navItem.classList.add('nav-item', `level-${level}`);
 
-      const navHeader = document.createElement('div');
-      navHeader.classList.add('nav-header');
-      navHeader.style.cursor = 'pointer';
-      navHeader.dataset.id = item.id;
+        const navHeader = document.createElement('div');
+        navHeader.classList.add('nav-header');
+        navHeader.style.cursor = 'pointer';
+        navHeader.dataset.id = item.id;
 
-      // (▶ cerrado, ▼ abierto)
-      const toggleIcon = document.createElement('span');
-      toggleIcon.textContent = '▶';
-      toggleIcon.classList.add('toggle-icon');
-      toggleIcon.style.marginRight = '5px';
+        // (▶ cerrado, ▼ abierto)
+        const toggleIcon = document.createElement('span');
+        toggleIcon.textContent = '▶';
+        toggleIcon.classList.add('toggle-icon');
+        toggleIcon.style.marginRight = '5px';
 
-      // Texto ítem
-      const navText = document.createElement('span');
-      navText.textContent = item.text;
+        // Texto ítem
+        const navText = document.createElement('span');
+        navText.textContent = item.text;
 
-      // Subcontenedor versiones
-      const subContainer = document.createElement('div');
-      subContainer.classList.add('nav-subitems');
-      subContainer.style.display = 'none';
+        // Subcontenedor versiones
+        const subContainer = document.createElement('div');
+        subContainer.classList.add('nav-subitems');
+        subContainer.style.display = 'none';
 
-      // abrir/cerrar menú `navHeader`
-      navHeader.addEventListener('click', () => {
-        if (subContainer.style.display === 'none') {
-          subContainer.style.display = 'block';
-          toggleIcon.textContent = '▼'; // Cambiar a expandido
-        } else {
-          subContainer.style.display = 'none';
-          toggleIcon.textContent = '▶'; // Cambiar a colapsado
-        }
-      });
-
-      navHeader.appendChild(toggleIcon);
-      navHeader.appendChild(navText);
-      navItem.appendChild(navHeader);
-      navItem.appendChild(subContainer);
-      container.appendChild(navItem);
-
-      // Si es un 'item', obtener versiones
-      if (item.id.startsWith('item')) {
-        const [_, hubId, projectId, itemId] = item.id.split('|');
-        const versions = await getVersions(hubId, projectId, itemId);
-        
-        if (versions.length > 0) {
-          // Si hay versiones, las agregamos al subContainer
-          versions.forEach((version) => {
-            console.log('version', version);
-            const versionItem = document.createElement('div');
-            versionItem.textContent = `Version: ${version.text}`;
-            versionItem.style.cursor = 'pointer';
-
-            versionItem.addEventListener('click', async () => {
-              console.log('Versión clickeada:', version);
-              const tokens = version.id.split('|');
-              if (tokens[0] === 'version') {
-                await loadModel2(viewer, window.btoa(tokens[1]).replace(/=/g, ''));
-              }
-            });
-
-            subContainer.appendChild(versionItem);
-          });
-        } else {
-          toggleIcon.style.visibility = 'hidden';
-        }
-      }
-
-      return; // Detener iteracion si se hace match con docId
-    }
-
-    // Si es un folder, seguir buscando dentro de él
-    if (item.id.startsWith('folder')) {
-      const [_, hubId, projectId, folderId] = item.id.split('|');
-      const subItems = await getContents(hubId, projectId, folderId);
-      
-      if (subItems.length > 0) {
-        await renderTree({
-          container,
-          items: subItems,
-          viewer,
-          level,
-          docId, 
-          renderedIds
+        // abrir/cerrar menú `navHeader`
+        navHeader.addEventListener('click', () => {
+          if (subContainer.style.display === 'none') {
+            subContainer.style.display = 'block';
+            toggleIcon.textContent = '▼'; // Cambiar a expandido
+          } else {
+            subContainer.style.display = 'none';
+            toggleIcon.textContent = '▶'; // Cambiar a colapsado
+          }
         });
+        navHeader.appendChild(navText);
+        navHeader.appendChild(toggleIcon);
+        
+        navItem.appendChild(navHeader);
+        navItem.appendChild(subContainer);
+        container.appendChild(navItem);
+
+        // Si es un 'item', obtener versiones
+        if (item.id.startsWith('item')) {
+          const [_, hubId, projectId, itemId] = item.id.split('|');
+          const versions = await getVersions(hubId, projectId, itemId);
+
+          if (versions.length > 0) {
+            // Si hay versiones, las agregamos al subContainer
+            versions.forEach((version) => {
+              console.log('version', version);
+              const versionItem = document.createElement('div');
+              versionItem.style.cursor = 'pointer';
+              versionItem.style.fontSize = 'smaller';
+              versionItem.style.color = '#495057';
+              versionItem.style.padding = '10px 10px';
+              versionItem.style.margin = '4px';
+              versionItem.style.display = 'flex'; // Usar flexbox para alinear ícono y texto
+              versionItem.style.alignItems = 'center'; // Centrar verticalmente
+              versionItem.style.justifyContent = 'space-between'; // Espacio entre texto e ícono
+              versionItem.style.borderRadius = '5px';
+              versionItem.style.borderBottom = '2px solid #dee2e6';
+              versionItem.style.borderLeft = '2px solid #dee2e6';
+
+              // Texto de la versión
+              const versionText = document.createElement('span');
+              versionText.textContent = `Version: ${version.text}`;
+
+              const fileIcon = document.createElement('span');
+              fileIcon.classList.add('material-icons');
+              fileIcon.style.marginRight = '8px';
+              fileIcon.style.fontSize = '22px';
+
+              // Obtener la extensión del archivo desde el nombre del item
+              const extension = getFileExtension(item.text);
+
+              // Asignar ícono según la extensión
+              if (extension === 'pdf') {
+                fileIcon.textContent = 'picture_as_pdf';
+                fileIcon.style.color = '#e53935'; // Rojo para PDF
+              } else if (
+                ['png', 'jpg', 'jpeg', 'gif', 'bmp'].includes(extension)
+              ) {
+                fileIcon.textContent = 'image';
+                fileIcon.style.color = '#2196F3'; // Azul para imágenes
+              } else {
+                fileIcon.textContent = 'insert_drive_file'; // Ícono genérico
+                fileIcon.style.color = '#6c757d'; // Gris para otros tipos
+              }
+
+              versionItem.appendChild(fileIcon);
+              versionItem.appendChild(versionText);
+
+              // Evento click para la versión
+              versionItem.addEventListener('click', async () => {
+                console.log('Versión clickeada:', version);
+                const tokens = version.id.split('|');
+                if (tokens[0] === 'version') {
+                  await loadModel2(
+                    viewer,
+                    window.btoa(tokens[1]).replace(/=/g, '')
+                  );
+                }
+              });
+
+              // Agregar versionItem al subContainer
+              subContainer.appendChild(versionItem);
+            });
+          } else {
+            toggleIcon.style.visibility = 'hidden';
+          }
+        }
+
+        return; // Detener iteracion si se hace match con docId
       }
-    }
-  }));
+
+      // Si es un folder, seguir buscando dentro de él
+      if (item.id.startsWith('folder')) {
+        const [_, hubId, projectId, folderId] = item.id.split('|');
+        const subItems = await getContents(hubId, projectId, folderId);
+
+        if (subItems.length > 0) {
+          await renderTree({
+            container,
+            items: subItems,
+            viewer,
+            level,
+            docId,
+            renderedIds,
+          });
+        }
+      }
+    })
+  );
 }
 
-
-
-
-
-export let tree2ContainerGlobal = null;
+export let tree2ContainerGlobal = document.getElementById('tree2');
 export let result2Global = null;
 
 export function initTree(selector, viewer, onSelectionChanged) {
@@ -268,10 +323,10 @@ export function initTree(selector, viewer, onSelectionChanged) {
           const result2 = await getContents(a[1], a[2], a[3]);
           console.log('result2', result2);
 
-          tree2ContainerGlobal = document.getElementById("tree2");
-          result2Global = result2
+          tree2ContainerGlobal = document.getElementById('tree2');
+          result2Global = result2;
 
-          console.log('tree2ContainerGlobal', tree2ContainerGlobal)
+          console.log('tree2ContainerGlobal', tree2ContainerGlobal);
 
           /* if (tree2Container) {
             renderTree({
@@ -290,9 +345,8 @@ export function initTree(selector, viewer, onSelectionChanged) {
     //
 
     if (tokens[0] === 'version') {
-      console.log('tokens[0]', tokens[0])
+      console.log('tokens[0]', tokens[0]);
       onSelectionChanged(tokens[1]);
-      
     }
   });
   return new InspireTreeDOM(tree, { target: selector });

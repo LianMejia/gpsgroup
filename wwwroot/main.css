@@ -136,26 +136,40 @@ html {
   right: 20px;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 1000;
   transition: all 0.3s ease;
+  z-index: 1000;
   background: white;
   border: 1px solid #ddd;
-  width: 30px;
-  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+  padding-left: '0';
+  padding-right: '0';
+}
+
+.sidenav-toggle.btn {
+  padding: 0 !important; /* Elimina padding del botón */
+}
+
+/* Cuando el sidenav está activo */
+body.sidenav-active .sidenav-toggle {
+  right: calc(300px + 20px); /* 300px del ancho del sidenav + 20px de margen */
+  transform: translateY(-50%) rotate(180deg);
+  transition: all 0.3s ease;
+}
+
+/* Versión móvil */
+@media (max-width: 768px) {
+  body.sidenav-active .sidenav-toggle {
+    right: calc(80% + 20px);
+  }
 }
 
 .sidenav-toggle:hover {
   background: #f0f0f0;
 }
 
-#sidenav.active + .sidenav-toggle {
-  right: 320px;
-  transform: translateY(-50%) rotate(180deg);
-}
 #preview {
   right: 0;
   transition: all 0.3s ease;
@@ -178,17 +192,13 @@ html {
   #sidenav.active ~ #preview {
     right: 80%;
   }
-
-  #sidenav.active + .sidenav-toggle {
-    right: calc(80% + 20px);
-  }
 }
 
 .nav-menu {
   padding-left: 0.5rem;
 }
 
-/* Agregar efecto de desplazamiento hacia la izquierda para cada subnivel */
+/* Efecto de desplazamiento hacia la izquierda para cada subnivel */
 .nav-item {
   margin-bottom: 0.5rem;
   padding-left: 0.5rem;
@@ -210,7 +220,7 @@ html {
 
 .nav-subitems {
   display: none; /* Ocultar subelementos por defecto */
-  margin-left: 15px;
+  padding-left: 1.5rem;
 }
 
 .nav-item.active .nav-subitems {
@@ -233,9 +243,9 @@ html {
 .nav-subitem {
   display: block;
   padding: 0.4rem 1rem;
-  color: #666;
+  color: #495057;
   text-decoration: none;
-  font-size: 0.9em;
+  font-size: smaller;
 }
 
 .nav-subitem:hover {
@@ -249,7 +259,7 @@ html {
 }
 
 .nav-item.active .nav-subitems {
-  max-height: 500px; /* Ajustar según contenido */
+  max-height: 500px;
 }
 
 .nav-item.active .toggle-icon {
@@ -259,13 +269,13 @@ html {
 /*  */
 
 #loadingSpinner.spinner {
-  border: 2px solid #f3f3f3; /* Reducir grosor del borde */
+  border: 2px solid #f3f3f3;
   border-top: 2px solid #3498db;
   border-radius: 50%;
-  width: 20px; /* Tamaño más pequeño */
+  width: 20px;
   height: 20px;
   animation: spin 1s linear infinite;
-  margin: 10px auto; /* Centrado horizontal con margen */
+  margin: 10px auto;
   display: none;
 }
 
@@ -289,22 +299,24 @@ html {
 
 .attributes-header {
   font-size: smaller;
-  background-color: #f8f9fa;
   text-align: left;
   padding: 12px 15px;
   border-bottom: 2px solid #dee2e6;
+  border-left: 2px solid #dee2e6;
   font-weight: 600;
   color: #495057;
+  border-radius: 5px;
 }
 
 .no-content-message {
   font-size: smaller;
-  background-color: #f8f9fa;
   text-align: left;
   padding: 12px 15px;
   border-bottom: 2px solid #dee2e6;
+  border-left: 2px solid #dee2e6;
   font-weight: 600;
   color: #495057;
+  border-radius: 5px;
 }
 
 .attributes-table {
@@ -351,13 +363,13 @@ html {
 }
 
 .section-header {
-  padding: 12px 15px;
-  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
+  padding: 12px 15px;
+  cursor: pointer;
   transition: all 0.2s ease;
-  background-color: #f8f9fa;
+  background-color: #f5f7f8;
   border-radius: 4px;
   margin: 4px;
 }
@@ -371,7 +383,9 @@ html {
   font-weight: 600;
   color: #2c3e50;
   font-size: 0.95em;
+  flex-grow: 1;
 }
+
 
 .section-content {
   display: none;
@@ -393,6 +407,11 @@ html {
   transform: rotate(90deg);
 }
 
+.material-icons {
+  font-size: 14;
+  color: #6c757d;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -400,3 +419,4 @@ html {
 
 /* Se oculta la opcion de 'ver propiedades' en el toolbar */
 .adsk-viewing-viewer #toolbar-propertiesTool{display:none!important}
+
