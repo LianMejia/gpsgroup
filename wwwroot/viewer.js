@@ -177,7 +177,10 @@ export function initViewer(container) {
       { env: 'AutodeskProduction', getAccessToken },
       function () {
         const config = {
-          extensions: ['Autodesk.DocumentBrowser'],
+          extensions: [
+            'Autodesk.DocumentBrowser',
+            'Autodesk.Viewing.MarkupsCore',
+          ],
         };
         const viewer = new Autodesk.Viewing.GuiViewer3D(container, config);
         viewer.start();
@@ -190,7 +193,19 @@ export function initViewer(container) {
 
 export function loadModel(viewer, urn) {
   function onDocumentLoadSuccess(doc) {
-    viewer.loadDocumentNode(doc, doc.getRoot().getDefaultGeometry());
+    viewer
+      .loadDocumentNode(doc, doc.getRoot().getDefaultGeometry())
+      .then(() => {
+        // Esperar a que la geometría esté completamente cargada
+        viewer.addEventListener(
+          Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
+          () => {
+            // Llamar a la función para filtrar objetos con PRESENTAR = Si
+            filterObjectsByPresentar(viewer);
+          },
+          { once: true } // Asegura que el evento solo se ejecute una vez
+        );
+      });
   }
   function onDocumentLoadFailure(code, message) {
     alert('Could not load model. See console for more details.');
@@ -202,6 +217,105 @@ export function loadModel(viewer, urn) {
     onDocumentLoadFailure
   );
 }
+
+function filterObjectsByPresentar(viewer) {
+  const validTypePresentar = ['Si'];
+  const instanceTree = viewer.model.getData().instanceTree;
+  const fragList = viewer.model.getFragmentList();
+
+  // Eliminamos etiquetas anteriores
+  const existingLabels = viewer.container.querySelectorAll('.presentar-label');
+  existingLabels.forEach((label) => label.remove());
+
+  // Obtenemos todos los dbIds del modelo
+  const dbIdArray = Object.keys(instanceTree.nodeAccess.dbIdToIndex).map(Number);
+
+  // Obtenemos propiedades en bloque para evitar multiples peticiones
+  viewer.model.getBulkProperties(dbIdArray, ['PRESENTAR', 'DOC-ID'], (results) => {
+    const objectsToShow = [];
+
+    results.forEach((props) => {
+      const presentar = props.properties.find((p) => p.displayName === 'PRESENTAR')?.displayValue;
+      const docId = props.properties.find((p) => p.displayName === 'DOC-ID')?.displayValue || 'Sin DOC-ID';
+
+      if (validTypePresentar.includes(presentar)) {
+        let box = new THREE.Box3();
+
+        instanceTree.enumNodeFragments(props.dbId, (fragId) => {
+          let fragBox = new THREE.Box3();
+          fragList.getWorldBounds(fragId, fragBox);
+          box.union(fragBox);
+        });
+
+        if (!box.isEmpty()) {
+          objectsToShow.push({
+            dbId: props.dbId,
+            center: box.getCenter(new THREE.Vector3()),
+            boxSize: box.getSize(new THREE.Vector3()),
+            label: createLabel(docId, viewer)
+          });
+        }
+      }
+    });
+
+    function createLabel(text, viewer) {
+      const label = document.createElement('div');
+      label.className = 'presentar-label';
+      label.textContent = text;
+      label.style.position = 'absolute';
+      label.style.color = 'black';
+      label.style.border = '2px solid rgba(255, 255, 255, 0.5)';
+      label.style.padding = '4px 6px';
+      label.style.borderRadius = '50%';
+      label.style.pointerEvents = 'none';
+      label.style.fontSize = '0.85rem';
+      label.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+      label.style.boxShadow = 'inset 0 0 10px rgba(255, 255, 255, 0.3), 0 4px 8px rgba(0, 0, 0, 0.2)';
+      label.style.display = 'none';
+
+      viewer.container.appendChild(label);
+      return label;
+    }
+
+    function updateLabels() {
+      const camera = viewer.getCamera();
+      const viewerWidth = viewer.container.clientWidth;
+      const viewerHeight = viewer.container.clientHeight;
+
+      objectsToShow.forEach((obj) => {
+        const screenPos = viewer.worldToClient(obj.center);
+        const screenBoxSize = viewer.worldToClient(obj.boxSize.clone().add(obj.center));
+
+        const screenWidth = Math.abs(screenBoxSize.x - screenPos.x);
+        const screenHeight = Math.abs(screenBoxSize.y - screenPos.y);
+
+        if (screenWidth > viewerWidth * 0.03 || screenHeight > viewerHeight * 0.03) {
+          obj.label.style.display = 'block';
+          obj.label.style.left = `${screenPos.x}px`;
+          obj.label.style.top = `${screenPos.y}px`;
+        } else {
+          obj.label.style.display = 'none';
+        }
+      });
+    }
+
+    // Optimizamos con throttle (evita actualizaciones excesivas)
+    let lastUpdate = 0;
+    function throttledUpdateLabels() {
+      const now = performance.now();
+      if (now - lastUpdate > 30) { // 30ms entre actualizaciones
+        lastUpdate = now;
+        updateLabels();
+      }
+    }
+
+    viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, throttledUpdateLabels);
+
+    // Llamada inicial
+    updateLabels();
+  });
+}
+
 
 // Abrir modal
 function openModal() {
