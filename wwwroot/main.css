@@ -416,6 +416,3 @@ body.sidenav-active .sidenav-toggle {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
-/* Se oculta la opcion de 'ver propiedades' en el toolbar */
-.adsk-viewing-viewer #toolbar-propertiesTool{display:none!important}
