@@ -220,6 +220,585 @@ async function getAccessToken(callback) {
   }
 }
 
+class CustomToolExtension extends Autodesk.Viewing.Extension {
+  constructor(viewer, options) {
+    super(viewer, options);
+    this._group = null;
+    this._button = null;
+  }
+
+  load() {
+    console.log("CustomToolExtension se ha cargado");
+    return true;
+  }
+
+  unload() {
+    console.log("CustomToolExtension no se ha podido cargar");
+
+    // Limpiar recursos
+    if (this._button) {
+      this.removeToolbarButton();
+    }
+    return true;
+  }
+
+  onToolbarCreated(toolbar) {
+    // Creamos un grupo de botones adicional en el toolbar
+    this._group = new Autodesk.Viewing.UI.ControlGroup("custom-tool-group");
+
+    // Creamos el botón personalizado
+    this._button = new Autodesk.Viewing.UI.Button("my-custom-tool-button");
+    this._button.onClick = (ev) => {
+        // Abrir el modal
+        this.openModal();
+        this.listObjects();
+    };
+    this._button.setToolTip("Tabla de objetos");
+
+    // Crear un elemento span para el ícono de Material Icons
+    const icon = document.createElement("span");
+    icon.className = "material-icons"; // Clase de Material Icons
+    icon.innerText = "table_chart"; // Nombre del ícono
+    icon.style.fontSize = "24px"; // Tamaño del ícono
+    icon.style.color = "black";
+
+    // Aplicar estilos al contenedor del botón
+    this._button.container.style.display = "flex"; // Usar flexbox para centrar
+    this._button.container.style.alignItems = "center"; // Centrar verticalmente
+    this._button.container.style.justifyContent = "center"; // Centrar horizontalmente
+    this._button.container.style.borderRadius = "4px"; // Bordes redondeados
+
+    // Agregar el ícono al botón
+    this._button.container.appendChild(icon);
+
+    // Agregamos el botón al grupo
+    this._group.addControl(this._button);
+
+    // Agregamos el grupo a la barra de herramientas
+    toolbar.addControl(this._group);
+}
+
+  openModal() {
+    this._modal = document.getElementById("customModal");
+    if (this._modal) {
+      this._modal.style.display = "block";
+
+      // Agregar eventos para mover el modal
+      const header = this._modal.querySelector("div:first-child");
+      header.addEventListener("mousedown", (e) => this.startDrag(e));
+      document.addEventListener("mousemove", (e) => this.dragModal(e));
+      document.addEventListener("mouseup", () => this.stopDrag());
+
+      // Agregar evento para cerrar el modal
+      const closeButton = this._modal.querySelector("#closeCustomModal");
+      closeButton.addEventListener("click", () => this.closeModal());
+    }
+  }
+
+  closeModal() {
+    if (this._modal) {
+      this._modal.style.display = "none";
+    }
+  }
+
+  startDrag(e) {
+    this._isDragging = true;
+    const rect = this._modal.getBoundingClientRect();
+    this._offsetX = e.clientX - rect.left;
+    this._offsetY = e.clientY - rect.top;
+  }
+
+  dragModal(e) {
+    if (this._isDragging && this._modal) {
+      this._modal.style.left = `${e.clientX - this._offsetX}px`;
+      this._modal.style.top = `${e.clientY - this._offsetY}px`;
+    }
+  }
+
+  stopDrag() {
+    this._isDragging = false;
+  }
+
+  removeToolbarButton() {
+    if (this._group && this._button) {
+      this._group.removeControl(this._button);
+      this._button = null;
+    }
+  }
+
+  listObjects() {
+    const viewer = this.viewer;
+    const tableBody = document.querySelector("#objectsTable tbody");
+    tableBody.innerHTML = ""; // Limpiar la tabla antes de llenarla
+
+    // Obtener el árbol de objetos del modelo
+    viewer.getObjectTree((tree) => {
+      if (tree) {
+        // Crear un expansible para "poste"
+        const posteRow = document.createElement("tr");
+        posteRow.innerHTML = `
+          <td style="padding: 8px; border-bottom: 1px solid #ccc;">
+            poste
+          </td>
+          <td style="padding: 8px; border-bottom: 1px solid #ccc;">
+            <button class="view-button" data-dbid="poste">Ver elementos</button>
+          </td>
+        `;
+        tableBody.appendChild(posteRow);
+  
+        // Agregar evento para mostrar la tabla de postes
+        const posteButton = posteRow.querySelector(".view-button");
+        posteButton.addEventListener("click", () => {
+          this.showFilteredTable(viewer, tree, "poste");
+        });
+  
+        // Crear un expansible para "aireadores"
+        const aireadoresRow = document.createElement("tr");
+        aireadoresRow.innerHTML = `
+          <td style="padding: 8px; border-bottom: 1px solid #ccc;">
+            aireadores
+          </td>
+          <td style="padding: 8px; border-bottom: 1px solid #ccc;">
+            <button class="view-button" data-dbid="aireadores">Ver elementos</button>
+          </td>
+        `;
+        tableBody.appendChild(aireadoresRow);
+  
+        // Agregar evento para mostrar la tabla de aireadores
+        const aireadoresButton = aireadoresRow.querySelector(".view-button");
+        aireadoresButton.addEventListener("click", () => {
+          this.showFilteredTable(viewer, tree, "aireadores");
+        });
+  
+        // Crear un expansible para "compensacion"
+        const compensacionRow = document.createElement("tr");
+        compensacionRow.innerHTML = `
+          <td style="padding: 8px; border-bottom: 1px solid #ccc;">
+            compensacion
+          </td>
+          <td style="padding: 8px; border-bottom: 1px solid #ccc;">
+            <button class="view-button" data-dbid="compensacion">Ver elementos</button>
+          </td>
+        `;
+        tableBody.appendChild(compensacionRow);
+  
+        // Agregar evento para mostrar la tabla de compensacion
+        const compensacionButton = compensacionRow.querySelector(".view-button");
+        compensacionButton.addEventListener("click", () => {
+          this.showFilteredTable(viewer, tree, "compensacion");
+        });
+  
+        // Crear un expansible para "transformador"
+        const transformadorRow = document.createElement("tr");
+        transformadorRow.innerHTML = `
+          <td style="padding: 8px; border-bottom: 1px solid #ccc;">
+            transformador
+          </td>
+          <td style="padding: 8px; border-bottom: 1px solid #ccc;">
+            <button class="view-button" data-dbid="transformador">Ver elementos</button>
+          </td>
+        `;
+        tableBody.appendChild(transformadorRow);
+  
+        // Agregar evento para mostrar la tabla de transformador
+        const transformadorButton = transformadorRow.querySelector(".view-button");
+        transformadorButton.addEventListener("click", () => {
+          this.showFilteredTable(viewer, tree, "transformador");
+        });
+      } else {
+        console.warn("No se pudo obtener el árbol de objetos.");
+      }
+    });
+  }
+
+  showFilteredTable(viewer, tree, filter) {
+    // Definir las cabeceras según el filtro
+    let headers = [];
+    switch (filter) {
+      case "poste":
+        headers = ["POSTE", "TIPO"];
+        break;
+      case "aireadores":
+        headers = ["NOMBRE", "N° AIREADORES"];
+        break;
+      case "compensacion":
+        headers = ["NOMBRE", "CAPACIDAD"];
+        break;
+      case "transformador":
+        headers = [
+          "ID",
+          "NOMBRE TRANSFORMADOR",
+          "CAPACIDAD KVA",
+          "PISCINA",
+          "MARCA",
+        ];
+        break;
+      default:
+        headers = ["POSTE", "TIPO"];
+    }
+
+    // Crear el modal para la tabla filtrada
+    const filteredModal = document.createElement("div");
+    filteredModal.id = `${filter}Modal`;
+    filteredModal.style.display = "none";
+    filteredModal.style.position = "fixed";
+    filteredModal.style.top = "50px";
+    filteredModal.style.left = "50px";
+    filteredModal.style.background = "white";
+    filteredModal.style.border = "1px solid #ccc";
+    filteredModal.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+    filteredModal.style.zIndex = "1000";
+    filteredModal.style.width = "800px";
+    filteredModal.classList.add("resizable");
+
+    let isResizing = false;
+  let startX, startY, startWidth, startHeight;
+
+  filteredModal.addEventListener("mousedown", (e) => {
+    if (e.target === filteredModal) {
+      isResizing = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      startWidth = parseInt(document.defaultView.getComputedStyle(filteredModal).width, 10);
+      startHeight = parseInt(document.defaultView.getComputedStyle(filteredModal).height, 10);
+      e.preventDefault();
+    }
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (isResizing) {
+      filteredModal.style.width = `${startWidth + e.clientX - startX}px`;
+      filteredModal.style.height = `${startHeight + e.clientY - startY}px`;
+    }
+  });
+
+  document.addEventListener("mouseup", () => {
+    isResizing = false;
+  });
+
+  // Agregar el modal al body del documento
+  document.body.appendChild(filteredModal);
+
+  // Mostrar el modal
+  filteredModal.style.display = "block";
+
+    // Header del modal con botón de cierre
+    const modalHeader = document.createElement("div");
+    modalHeader.style.background = "#f1f1f1";
+    modalHeader.style.padding = "10px";
+    modalHeader.style.cursor = "move";
+    modalHeader.style.display = "flex"; // Añade display flex
+    modalHeader.style.justifyContent = "space-between"; // Alinea los elementos a los extremos
+    modalHeader.style.alignItems = "center"; // Centra verticalmente los elementos
+
+    const closeButton = document.createElement("span");
+    closeButton.id = `close${filter}Modal`;
+    closeButton.style.cursor = "pointer";
+    closeButton.textContent = "×";
+    closeButton.style.overflowY = "auto";
+    closeButton.style.fontWeight = "600";
+    closeButton.style.fontSize = "18px";
+
+    const modalTitle = document.createElement("h3");
+    modalTitle.style.margin = "0";
+    modalTitle.textContent = `Tabla de ${filter}`;
+
+    modalHeader.appendChild(modalTitle);
+    modalHeader.appendChild(closeButton);
+
+    // Cuerpo del modal con la tabla
+    const modalBody = document.createElement("div");
+    modalBody.style.padding = "20px";
+    modalBody.style.maxHeight = "85vh";
+    modalBody.style.overflowY = "auto";
+
+    const filteredTable = document.createElement("table");
+    filteredTable.id = `${filter}Table`;
+    filteredTable.style.width = "100%";
+    filteredTable.style.borderCollapse = "collapse";
+    filteredTable.style.maxHeight = "100%";
+
+    const tableHead = document.createElement("thead");
+    tableHead.innerHTML = `
+      <tr>
+        ${headers
+          .map(
+            (header) =>
+              `<th style="padding: 8px; border-bottom: 1px solid #ccc;">${header}</th>`
+          )
+          .join("")}
+        <th style="padding: 8px; border-bottom: 1px solid #ccc;">Acción</th>
+      </tr>
+    `;
+
+    const tableBody = document.createElement("tbody");
+
+    filteredTable.appendChild(tableHead);
+    filteredTable.appendChild(tableBody);
+    modalBody.appendChild(filteredTable);
+
+    // Agregar header y body al modal
+    filteredModal.appendChild(modalHeader);
+    filteredModal.appendChild(modalBody);
+
+    // Agregar el modal al body del documento
+    document.body.appendChild(filteredModal);
+
+    // Mostrar el modal
+    filteredModal.style.display = "block";
+
+    // Llenar la tabla con los objetos que contienen el filtro
+    this.fillFilteredTable(viewer, tree, tableBody, filter);
+
+    // Agregar funcionalidad de arrastrar
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    modalHeader.addEventListener("mousedown", (e) => {
+      isDragging = true;
+      offsetX = e.clientX - filteredModal.offsetLeft;
+      offsetY = e.clientY - filteredModal.offsetTop;
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      if (isDragging) {
+        filteredModal.style.left = `${e.clientX - offsetX}px`;
+        filteredModal.style.top = `${e.clientY - offsetY}px`;
+      }
+    });
+
+    document.addEventListener("mouseup", () => {
+      isDragging = false;
+    });
+
+    // Agregar funcionalidad de cerrar
+    closeButton.addEventListener("click", () => {
+      filteredModal.style.display = "none";
+    });
+  }
+
+  fillFilteredTable(viewer, tree, tableBody, filter) {
+    const rootId = tree.getRootId();
+    this.findAndDisplayFilteredObjects(viewer, tree, rootId, tableBody, filter);
+  }
+
+  findAndDisplayFilteredObjects(viewer, tree, dbId, container, filter) {
+    tree.enumNodeChildren(dbId, (childDbId) => {
+      viewer.getProperties(childDbId, (childProps) => {
+        const childName = childProps.name || "Sin nombre";
+        const normalizedName = childName
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase();
+  
+        if (normalizedName.includes(filter)) {
+          let properties = [];
+  
+          // Determinar qué propiedades mostrar según el filtro
+          switch (filter) {
+            case "poste":
+              properties.push(
+                childProps.properties.find(
+                  (prop) => prop.displayName === "DOC-ID"
+                )?.displayValue || "N/A"
+              );
+              properties.push(
+                childProps.properties.find(
+                  (prop) => prop.displayName === "Comments"
+                )?.displayValue || "N/A"
+              );
+              break;
+            case "aireadores":
+              properties.push(
+                childProps.properties.find(
+                  (prop) => prop.displayName === "NOMBRE TA"
+                )?.displayValue || "N/A"
+              );
+              properties.push(
+                childProps.properties.find(
+                  (prop) => prop.displayName === "N° AIREADORES"
+                )?.displayValue || "N/A"
+              );
+              break;
+            case "compensacion":
+              properties.push(
+                childProps.properties.find(
+                  (prop) => prop.displayName === "NOMBRE TCP"
+                )?.displayValue || "N/A"
+              );
+              properties.push(
+                childProps.properties.find(
+                  (prop) => prop.displayName === "CAPACIDAD TCP"
+                )?.displayValue || "N/A"
+              );
+              break;
+            case "transformador":
+              properties.push(
+                childProps.properties.find((prop) => prop.displayName === "ID")
+                  ?.displayValue || "N/A"
+              );
+              properties.push(
+                childProps.properties.find(
+                  (prop) => prop.displayName === "NOMBRE TR"
+                )?.displayValue || "N/A"
+              );
+              properties.push(
+                childProps.properties.find(
+                  (prop) => prop.displayName === "CAPACIDAD TR"
+                )?.displayValue || "N/A"
+              );
+              properties.push(
+                childProps.properties.find(
+                  (prop) => prop.displayName === "PISCINA"
+                )?.displayValue || "N/A"
+              );
+              properties.push(
+                childProps.properties.find(
+                  (prop) => prop.displayName === "MARCA"
+                )?.displayValue || "N/A"
+              );
+              break;
+            default:
+              properties.push("N/A");
+              properties.push("N/A");
+          }
+  
+          // Crear una fila para el objeto
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            ${properties
+              .map(
+                (prop) =>
+                  `<td style="padding: 8px; border-bottom: 1px solid #ccc;">${prop}</td>`
+              )
+              .join("")}
+            <td style="padding: 8px; border-bottom: 1px solid #ccc;">
+              <button class="view-button" data-dbid="${childDbId}">Navegar</button>
+            </td>
+          `;
+          container.appendChild(row);
+  
+          // Agregar evento para centrar el objeto en el visor y subrayar la fila
+          const viewButton = row.querySelector(".view-button");
+          viewButton.addEventListener("click", () => {
+            // Remover la clase 'selected-row' de todas las filas
+            const rows = container.querySelectorAll("tr");
+            rows.forEach((r) => r.classList.remove("selected-row"));
+  
+            // Agregar la clase 'selected-row' a la fila actual
+            row.classList.add("selected-row");
+  
+            // Centrar el objeto en el visor
+            this.focusOnObject(viewer, childDbId);
+          });
+        }
+  
+        // Recursivamente buscar en los hijos
+        this.findAndDisplayFilteredObjects(
+          viewer,
+          tree,
+          childDbId,
+          container,
+          filter
+        );
+      });
+    });
+  }
+
+  toggleChildren(row, dbId, tree) {
+    const viewer = this.viewer;
+
+    // Obtener el ícono de despliegue
+    const toggleIcon = row.querySelector(".toggle-icon");
+
+    // Alternar la clase 'expanded'
+    toggleIcon.classList.toggle("expanded");
+
+    // Verificar si ya se han cargado los hijos
+    if (row.dataset.childrenLoaded) {
+      // Si ya están cargados, solo alternar la visibilidad
+      const childrenContainer = row.nextElementSibling;
+      childrenContainer.style.display =
+        childrenContainer.style.display === "none" ? "block" : "none";
+      return;
+    }
+
+    // Marcar que los hijos se están cargando
+    row.dataset.childrenLoaded = true;
+
+    // Crear un contenedor para los hijos
+    const childrenContainer = document.createElement("tr");
+    childrenContainer.innerHTML = `
+      <td colspan="3" style="padding-left: 20px;">
+        <div class="children-container"></div>
+      </td>
+    `;
+    childrenContainer.style.display = "none"; // Ocultar inicialmente
+
+    // Insertar el contenedor de hijos después de la fila actual
+    row.parentNode.insertBefore(childrenContainer, row.nextSibling);
+
+    // Obtener los hijos del objeto actual
+    const childrenDiv = childrenContainer.querySelector(".children-container");
+    tree.enumNodeChildren(dbId, (childDbId) => {
+      viewer.getProperties(childDbId, (childProps) => {
+        const childName = childProps.name || "Sin nombre";
+        const hasChildren = tree.getChildCount(childDbId) > 0; // Verificar si tiene hijos
+
+        // Crear una fila para el hijo
+        const childRow = document.createElement("div");
+        childRow.innerHTML = `
+          <div style="padding: 4px;">
+            ${
+              hasChildren
+                ? '<span class="toggle-icon" style="cursor: pointer; margin-right: 8px;">▶</span>'
+                : ""
+            }
+            <span>${childName}</span>
+            <button class="view-button" data-dbid="${childDbId}" style="margin-left: 10px;">Ver</button>
+          </div>
+        `;
+        childrenDiv.appendChild(childRow);
+
+        // Agregar evento para expandir/contraer subhijos (solo si tiene hijos)
+        if (hasChildren) {
+          const childToggleIcon = childRow.querySelector(".toggle-icon");
+          childToggleIcon.addEventListener("click", () => {
+            this.toggleChildren(childRow, childDbId, tree);
+          });
+        }
+
+        // Agregar evento para centrar el objeto en el visor
+        const viewButton = childRow.querySelector(".view-button");
+        viewButton.addEventListener("click", () => {
+          this.focusOnObject(viewer, childDbId);
+        });
+      });
+    });
+
+    // Mostrar el contenedor de hijos
+    childrenContainer.style.display = "block";
+  }
+
+  focusOnObject(viewer, dbId) {
+    // Aislar el objeto en el visor
+    viewer.isolate([dbId]);
+
+    // Centrar el objeto en la vista
+    viewer.fitToView([dbId]);
+
+    setTimeout(() => {
+      viewer.clearThemingColors(); // Quitar el resaltado después de 2 segundos
+    }, 2000);
+  }
+}
+
+// Registrar la nueva extensión
+Autodesk.Viewing.theExtensionManager.registerExtension(
+  "CustomToolExtension",
+  CustomToolExtension
+);
+
 export function initViewer(container) {
   return new Promise(function (resolve, reject) {
     Autodesk.Viewing.Initializer(
@@ -229,6 +808,7 @@ export function initViewer(container) {
           extensions: [
             "Autodesk.DocumentBrowser",
             "Autodesk.Viewing.MarkupsCore",
+            "CustomToolExtension",
           ],
         };
         const viewer = new Autodesk.Viewing.GuiViewer3D(container, config);

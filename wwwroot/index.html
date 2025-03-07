@@ -116,6 +116,27 @@
       </div>
     </div>
 
+        <!-- Modal personalizado -->
+    <div id="customModal" class="resizable" style="display: none; position: fixed; top: 50px; left: 50px; background: white; border: 1px solid #ccc; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); z-index: 1000; width: 800px;">
+        <div style="background: #f1f1f1; padding: 10px; cursor: move;">
+            <span id="closeCustomModal" style="float: right; cursor: pointer;">×</span>
+            <h3 style="margin: 0;">Objetos del Modelo</h3>
+        </div>
+        <div style="padding: 20px; max-height: 400px; overflow-y: auto;">
+            <table id="objectsTable" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="padding: 8px; border-bottom: 1px solid #ccc;">Nombre</th>
+                        <th style="padding: 8px; border-bottom: 1px solid #ccc;">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Las filas se llenarán dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
     <script src="https://unpkg.com/inspire-tree@4.3.1/dist/inspire-tree.js"></script>

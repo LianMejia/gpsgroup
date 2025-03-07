@@ -416,3 +416,124 @@ body.sidenav-active .sidenav-toggle {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/*  */
+
+/* Estilos para las tablas */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 14px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+  border-radius: 8px; /* Bordes redondeados */
+  overflow: hidden; /* Para que los bordes redondeados funcionen */
+}
+
+table th,
+table td {
+  padding: 12px 16px; /* Espaciado interno */
+  text-align: left; /* Alineación del texto */
+}
+
+table th {
+  background-color: black; /* Color de fondo azul */
+  color: white; /* Texto blanco */
+  font-weight: 600; /* Texto en negrita */
+}
+
+table tr:nth-child(even) {
+  background-color: #f8f9fa; /* Fondo alternado para filas pares */
+}
+
+table tr:hover {
+  background-color: #e9ecef; /* Fondo al pasar el mouse */
+}
+
+table td {
+  border-bottom: 1px solid #dee2e6; /* Borde inferior */
+}
+
+table tr:last-child td {
+  border-bottom: none; /* Eliminar borde de la última fila */
+}
+
+/* Estilos para el modal */
+
+#customModal {
+  display: none;
+  position: fixed;
+  top: 50px;
+  left: 50px;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  width: 800px;
+  border-radius: 8px; /* Bordes redondeados */
+  overflow: hidden; /* Para que los bordes redondeados funcionen */
+}
+
+#customModal > div:first-child {
+  background: #007bff; /* Color de fondo azul */
+  color: black; /* Texto blanco */
+  padding: 12px 16px; /* Espaciado interno */
+  font-weight: 600; /* Texto en negrita */
+  cursor: move; /* Cursor de mover */
+}
+
+#customModal > div:first-child span {
+  float: right;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+#customModal > div:first-child span:hover {
+  color: #ff4d4d; /* Color rojo al pasar el mouse */
+}
+
+#customModal > div:last-child {
+  padding: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Estilos para el botón "Ver" */
+
+.view-button {
+  background-color: #007bff; /* Color de fondo azul */
+  color: white; /* Texto blanco */
+  border: none; /* Sin borde */
+  padding: 8px 16px; /* Espaciado interno */
+  border-radius: 4px; /* Bordes redondeados */
+  cursor: pointer; /* Cursor de mano */
+  font-size: 14px; /* Tamaño de fuente */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Transiciones suaves */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+}
+
+.view-button:hover {
+  background-color: #0056b3; /* Color de fondo más oscuro al pasar el mouse */
+  transform: translateY(-1px); /* Efecto de elevación */
+}
+
+.view-button:active {
+  background-color: #004080; /* Color de fondo al hacer clic */
+  transform: translateY(0); /* Restablecer la elevación */
+}
+
+.resizable {
+  resize: both;
+  overflow: auto;
+  min-width: 300px; /* Ancho mínimo */
+  min-height: 200px; /* Altura mínima */
+}
+
+.selected-row {
+  /* background-color: #e0f7fa; */ /* Color de fondo para la fila seleccionada */
+  border-bottom: 2px solid #007bff; /* Subrayado azul */
+}
+
+/* Icon toolbar */
+
+.adsk-viewing-viewer #toolbar-propertiesTool{display:none!important}
