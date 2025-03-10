@@ -229,6 +229,25 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
 
   load() {
     console.log('CustomToolExtension se ha cargado');
+    
+    // Sobrescribir el comportamiento de autohighlight
+    const tool = this.viewer.toolController.getTool(
+      Autodesk.Viewing.TOOL.AUTOHIGHLIGHT
+    );
+    
+    const originalHandleAutoHighlight = tool.handleAutoHighlight.bind(tool);
+    tool.handleAutoHighlight = (event) => {
+      const result = originalHandleAutoHighlight(event);
+      if (result) {
+        const dbId = this.viewer.getHighlightedObject();
+        if (dbId !== null && !presentarDbIds.has(dbId)) {
+          this.viewer.clearHighlight();
+          return false;
+        }
+      }
+      return result;
+    };
+    
     return true;
   }
 
@@ -889,7 +908,12 @@ export function loadModel(viewer, urn) {
   );
 }
 
+export let presentarDbIds = new Set();
+
 function filterObjectsByPresentar(viewer) {
+
+  presentarDbIds.clear();
+
   const validTypePresentar = ['Si'];
   const instanceTree = viewer.model.getData().instanceTree;
   const fragList = viewer.model.getFragmentList();
@@ -928,6 +952,7 @@ function filterObjectsByPresentar(viewer) {
         // Clasificar objetos en dos grupos
         if (validTypePresentar.includes(presentar)) {
           if (validTypePresentar.includes(presentar)) {
+            presentarDbIds.add(props.dbId);
             console.log('props presentar', props);
             const docId =
               props.properties.find((p) => p.displayName === 'DOC-ID')
