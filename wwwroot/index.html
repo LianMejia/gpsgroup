@@ -83,38 +83,22 @@
       </div>
     </div>
 
-    <div
-      id="modelModal"
-      style="
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-        border-radius: 8px;
-      "
-    >
-      <div
-        style="
-          position: relative;
-          margin: 50px auto;
-          background: #fff;
-          width: 80%;
-          height: 80%;
-          border-radius: 8px;
-        "
-      >
-        <span id="closeModalBtn" class="btn material-icons">close</span>
-
-        <div
-          id="viewerContainer"
-          style="width: 20%; height: 20%; border-radius: 8px"
-        ></div>
-      </div>
-    </div>
+    <!-- En index.html, modificar el div del modal -->
+<div
+id="modelModal"
+style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 999;"
+>
+<div style="position: relative; margin: 20px auto; background: #fff; width: 90%; height: 90%; border-radius: 8px; display: flex;">
+  <!-- Sidebar de miniaturas -->
+  <div id="pdfThumbnails" style="width: 200px; border-right: 1px solid #ccc; overflow-y: auto; padding: 10px; background: #f5f5f5;"></div>
+  
+  <!-- Contenedor principal -->
+  <div style="flex: 1; position: relative;">
+    <span id="closeModalBtn" class="btn material-icons" style="position: absolute; right: 10px; top: 10px; z-index: 1000;">close</span>
+    <div id="viewerContainer" style="width: 100%; height: 100%;"></div>
+  </div>
+</div>
+</div>
 
         <!-- Modal personalizado -->
     <div id="customModal" class="resizable" style="display: none; position: fixed; top: 50px; left: 50px; background: white; border: 1px solid #ccc; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); z-index: 1000; width: 800px;">
@@ -142,7 +126,9 @@
     <script src="https://unpkg.com/inspire-tree@4.3.1/dist/inspire-tree.js"></script>
     <script src="https://unpkg.com/inspire-tree-dom@4.0.6/dist/inspire-tree-dom.min.js"></script>
 
-    <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.71/viewer3D.min.js"></script>
+    <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js"></script>
+    <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.css"></script>
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

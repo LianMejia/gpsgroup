@@ -417,32 +417,32 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
     // 1. Eliminar modal existente del mismo tipo
     const existingModal = document.getElementById(`${filter}Modal`);
     if (existingModal) {
-        existingModal.remove();
+      existingModal.remove();
     }
 
     // Definir las cabeceras según el filtro
     let headers = [];
     switch (filter) {
-        case 'poste':
-            headers = ['POSTE', 'TIPO'];
-            break;
-        case 'aireadores':
-            headers = ['NOMBRE', 'N° AIREADORES'];
-            break;
-        case 'compensacion':
-            headers = ['NOMBRE', 'CAPACIDAD'];
-            break;
-        case 'transformador':
-            headers = [
-                'ID',
-                'NOMBRE TRANSFORMADOR',
-                'CAPACIDAD KVA',
-                'PISCINA',
-                'MARCA',
-            ];
-            break;
-        default:
-            headers = ['POSTE', 'TIPO'];
+      case 'poste':
+        headers = ['POSTE', 'TIPO'];
+        break;
+      case 'aireadores':
+        headers = ['NOMBRE', 'N° AIREADORES'];
+        break;
+      case 'compensacion':
+        headers = ['NOMBRE', 'CAPACIDAD'];
+        break;
+      case 'transformador':
+        headers = [
+          'ID',
+          'NOMBRE TRANSFORMADOR',
+          'CAPACIDAD KVA',
+          'PISCINA',
+          'MARCA',
+        ];
+        break;
+      default:
+        headers = ['POSTE', 'TIPO'];
     }
 
     // Crear el modal para la tabla filtrada
@@ -460,27 +460,33 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
     // Configuración de redimensionamiento
     let isResizing = false;
     let startX, startY, startWidth, startHeight;
-    
+
     filteredModal.addEventListener('mousedown', (e) => {
-        if (e.target === filteredModal) {
-            isResizing = true;
-            startX = e.clientX;
-            startY = e.clientY;
-            startWidth = parseInt(document.defaultView.getComputedStyle(filteredModal).width, 10);
-            startHeight = parseInt(document.defaultView.getComputedStyle(filteredModal).height, 10);
-            e.preventDefault();
-        }
+      if (e.target === filteredModal) {
+        isResizing = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        startWidth = parseInt(
+          document.defaultView.getComputedStyle(filteredModal).width,
+          10
+        );
+        startHeight = parseInt(
+          document.defaultView.getComputedStyle(filteredModal).height,
+          10
+        );
+        e.preventDefault();
+      }
     });
 
     document.addEventListener('mousemove', (e) => {
-        if (isResizing) {
-            filteredModal.style.width = `${startWidth + e.clientX - startX}px`;
-            filteredModal.style.height = `${startHeight + e.clientY - startY}px`;
-        }
+      if (isResizing) {
+        filteredModal.style.width = `${startWidth + e.clientX - startX}px`;
+        filteredModal.style.height = `${startHeight + e.clientY - startY}px`;
+      }
     });
 
     document.addEventListener('mouseup', () => {
-        isResizing = false;
+      isResizing = false;
     });
 
     // Header del modal
@@ -527,7 +533,12 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
     const tableHead = document.createElement('thead');
     tableHead.innerHTML = `
         <tr>
-            ${headers.map(header => `<th style="padding: 8px; border-bottom: 1px solid #ccc;">${header}</th>`).join('')}
+            ${headers
+              .map(
+                (header) =>
+                  `<th style="padding: 8px; border-bottom: 1px solid #ccc;">${header}</th>`
+              )
+              .join('')}
             <th style="padding: 8px; border-bottom: 1px solid #ccc;">Acción</th>
         </tr>
     `;
@@ -537,7 +548,7 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
 
     filteredTable.appendChild(tableHead);
     filteredTable.appendChild(tableBody);
-    
+
     // Ensamblar componentes
     modalBody.appendChild(spinnerContainer);
     modalBody.appendChild(filteredTable);
@@ -550,42 +561,44 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
     let offsetX, offsetY;
 
     modalHeader.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        offsetX = e.clientX - filteredModal.offsetLeft;
-        offsetY = e.clientY - filteredModal.offsetTop;
+      isDragging = true;
+      offsetX = e.clientX - filteredModal.offsetLeft;
+      offsetY = e.clientY - filteredModal.offsetTop;
     });
 
     document.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-            filteredModal.style.left = `${e.clientX - offsetX}px`;
-            filteredModal.style.top = `${e.clientY - offsetY}px`;
-        }
+      if (isDragging) {
+        filteredModal.style.left = `${e.clientX - offsetX}px`;
+        filteredModal.style.top = `${e.clientY - offsetY}px`;
+      }
     });
 
     document.addEventListener('mouseup', () => {
-        isDragging = false;
+      isDragging = false;
     });
 
     closeButton.addEventListener('click', () => {
-        filteredModal.remove();
+      filteredModal.remove();
     });
 
     try {
-        // Mostrar estados iniciales
-        filteredModal.style.display = 'block';
-        spinnerContainer.style.display = 'flex';
-        
-        // Cargar datos
-        await this.fillFilteredTable(viewer, tree, tableBody, filter);
+      // Mostrar estados iniciales
+      filteredModal.style.display = 'block';
+      spinnerContainer.style.display = 'flex';
+
+      // Cargar datos
+      await this.fillFilteredTable(viewer, tree, tableBody, filter);
     } catch (error) {
-        console.error('Error al cargar datos:', error);
-        tableBody.innerHTML = `<tr><td colspan="${headers.length + 1}">Error cargando datos</td></tr>`;
+      console.error('Error al cargar datos:', error);
+      tableBody.innerHTML = `<tr><td colspan="${
+        headers.length + 1
+      }">Error cargando datos</td></tr>`;
     } finally {
-        // Ocultar spinner y mostrar tabla
-        spinnerContainer.remove();
-        filteredTable.style.display = 'table';
+      // Ocultar spinner y mostrar tabla
+      spinnerContainer.remove();
+      filteredTable.style.display = 'table';
     }
-}
+  }
 
   async fillFilteredTable(viewer, tree, tableBody, filter) {
     const rootId = tree.getRootId();
@@ -1059,16 +1072,28 @@ function closeModal() {
 }
 
 export function loadModel2(viewer, urn) {
+  const thumbnailsContainer = document.getElementById('pdfThumbnails');
+  
+  document.querySelector('#closeModalBtn').addEventListener('click', () => {
+    closeModal();
+    thumbnailsContainer.innerHTML = ''; // Limpiar miniaturas al cerrar
+  });
+
   // Evento de click en botón de cierre
   document
     .querySelector('#closeModalBtn')
     .addEventListener('click', closeModal);
 
   function onDocumentLoadSuccess(doc) {
-    // Abrimos el modal cuando el modelo esté listo
+    const rootItem = doc.getRoot();
+    const pdfPages = rootItem.search({ type: 'geometry', role: '2d' }, true);
+
+    console.log('Este PDF tiene', pdfPages.length, 'páginas.');
+    console.log('PDF', pdfPages);
+
+    // Abre el modal (tal como ya lo haces)
     openModal();
 
-    // Crear el visor en el contenedor dentro del modal
     Autodesk.Viewing.Initializer(
       {
         env: 'AutodeskProduction',
@@ -1076,16 +1101,29 @@ export function loadModel2(viewer, urn) {
       },
       function () {
         const options = {
-          extensions: [
-            'Autodesk.Viewing.MarkupsCore',
-            'Autodesk.Viewing.MarkupsGui',
-          ],
+          // Agregamos la extensión del DocumentBrowser
+          extensions: [],
         };
+
+        // Creamos el visor en tu contenedor
         viewer = new Autodesk.Viewing.GuiViewer3D(
-          document.getElementById('viewerContainer')
+          document.getElementById('viewerContainer'),
+          options
         );
         viewer.start();
-        viewer.loadDocumentNode(doc, doc.getRoot().getDefaultGeometry());
+
+        // Cargamos la geometría principal
+        viewer
+          .loadDocumentNode(doc, doc.getRoot().getDefaultGeometry())
+          .then(() => {
+            // Aquí forzamos la visibilidad del DocumentBrowser si es que no aparece automáticamente:
+            viewer
+              .loadExtension('Autodesk.DocumentBrowser')
+              
+
+            // Llamamos a la función para capturar las imágenes de cada página
+            capturePdfPages(doc, viewer);
+          });
       }
     );
   }
@@ -1101,4 +1139,84 @@ export function loadModel2(viewer, urn) {
     onDocumentLoadSuccess,
     onDocumentLoadFailure
   );
+}
+
+// 🔹 Función para capturar imágenes de cada página del PDF
+// En viewer.js, modificar la función capturePdfPages
+function capturePdfPages(doc, viewer) {
+  const rootItem = doc.getRoot();
+  const pdfPages = rootItem.search({ type: 'geometry', role: '2d' }, true);
+  const thumbnailsContainer = document.getElementById('pdfThumbnails');
+  
+  let images = [];
+
+  // Función para capturar una página específica
+  function capturePage(page, index) {
+    return viewer.loadDocumentNode(doc, page).then(() => {
+      return new Promise((resolve) => {
+        viewer.getScreenShot(200, 200, (imageData) => {
+          images.push({ 
+            page: index + 1, 
+            image: imageData,
+            node: page
+          });
+          resolve();
+        });
+      });
+    });
+  }
+
+  // Capturar todas las páginas en paralelo
+  Promise.all(pdfPages.map((page, index) => capturePage(page, index)))
+    .then(() => {
+      console.log('Captura de todas las páginas completada.');
+      renderThumbnails(images);
+    })
+    .catch((error) => {
+      console.error('Error al capturar las páginas:', error);
+    });
+
+  function renderThumbnails(images) {
+    thumbnailsContainer.innerHTML = '';
+    images.forEach((img, index) => {
+      const thumbnail = document.createElement('div');
+      thumbnail.style.position = 'relative';
+      thumbnail.style.marginBottom = '10px';
+      thumbnail.style.cursor = 'pointer';
+      thumbnail.style.border = '2px solid transparent';
+      thumbnail.innerHTML = `
+        <img src="${img.image}" 
+             style="width: 100%; 
+                    height: auto;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                    transition: transform 0.2s;"
+             onmouseover="this.style.transform='scale(1.02)'"
+             onmouseout="this.style.transform='scale(1)'">
+        <div style="position: absolute; bottom: 5px; right: 5px; 
+                    background: rgba(0,0,0,0.7); color: white; 
+                    padding: 2px 6px; border-radius: 3px;
+                    font-size: 12px;">
+          ${index + 1}
+        </div>
+      `;
+      
+      thumbnail.addEventListener('click', () => {
+        // Remover borde de todas las miniaturas
+        document.querySelectorAll('#pdfThumbnails div').forEach(t => {
+          t.style.borderColor = 'transparent';
+        });
+        // Resaltar miniatura seleccionada
+        thumbnail.style.borderColor = '#2196F3';
+        // Cargar la página seleccionada
+        viewer.loadDocumentNode(doc, img.node);
+      });
+      
+      thumbnailsContainer.appendChild(thumbnail);
+    });
+    
+    // Seleccionar primera miniatura por defecto
+    if (images.length > 0) {
+      thumbnailsContainer.firstChild.click();
+    }
+  }
 }
