@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon run start",
-    "build": "node server.js"
+    "build": "npm install"
   },
   "keywords": [
     "autodesk-platform-services"
