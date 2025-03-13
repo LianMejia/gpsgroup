@@ -4,7 +4,8 @@
   "description": "Autodesk Platform Services application built by following the Hubs Browser tutorial from https://aps.autodesk.com/tutorials.",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon run start"
+    "dev": "nodemon run start",
+    "build": "node server.js"
   },
   "keywords": [
     "autodesk-platform-services"

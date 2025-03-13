@@ -1,4 +1,9 @@
 /* Estilo del scrollbar */
+
+#viewer-wrapper canvas {
+  pointer-events: none;
+}
+
 ::-webkit-scrollbar {
   width: 5px; /* Prueba con un tamaño más notable */
   height: 5px;
@@ -536,7 +541,6 @@ table tr:last-child td {
 
 /* Icon toolbar */
 
-.adsk-viewing-viewer #toolbar-propertiesTool{display:none!important}
 
 .loading-spinner {
   display: flex;

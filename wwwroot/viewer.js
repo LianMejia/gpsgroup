@@ -1,69 +1,69 @@
-import { renderTree, result2Global, tree2ContainerGlobal } from './sidebar.js';
+import { renderTree, result2Global, tree2ContainerGlobal } from "./sidebar.js";
 
 // viewer.js
 export function setupSelectionHandler(viewer, callback) {
   let currentDocId = null;
-  const spinner = document.getElementById('loadingSpinner');
+  const spinner = document.getElementById("loadingSpinner");
 
   // Definimos los nombres/propiedades de objetos que se puedan seleccionar
-  const validTypePresentar = ['Si'];
+  const validTypePresentar = ["Si"];
 
   // Función para actualizar los atributos
   function updateAttributesPanel(props) {
-    const atributosDiv = document.getElementById('atributos');
-    const noFichasDiv = document.getElementById('no-fichas');
+    const atributosDiv = document.getElementById("atributos");
+    const noFichasDiv = document.getElementById("no-fichas");
 
     if (!atributosDiv || !noFichasDiv) return;
 
     // 1. Determinar el tipo de elemento por su nombre
-    const elementName = props.name || '';
+    const elementName = props.name || "";
     const normalizedName = elementName
-      .normalize('NFD') // Normalizar tildes
-      .replace(/[\u0300-\u036f]/g, '') // Eliminar diacríticos
+      .normalize("NFD") // Normalizar tildes
+      .replace(/[\u0300-\u036f]/g, "") // Eliminar diacríticos
       .toLowerCase();
 
     // 2. Seleccionar atributos según palabras clave
     let selectedAttributes = {};
-    if (normalizedName.includes('poste')) {
+    if (normalizedName.includes("poste")) {
       selectedAttributes = {
-        Comments: props.properties.find((p) => p.displayName === 'Comments')
+        Comments: props.properties.find((p) => p.displayName === "Comments")
           ?.displayValue,
-        'DOC-ID': props.properties.find((p) => p.displayName === 'DOC-ID')
+        "DOC-ID": props.properties.find((p) => p.displayName === "DOC-ID")
           ?.displayValue,
       };
-    } else if (normalizedName.includes('aireadores')) {
+    } else if (normalizedName.includes("aireadores")) {
       selectedAttributes = {
-        'N° AIREADORES': props.properties.find(
-          (p) => p.displayName === 'N° AIREADORES'
+        "N° AIREADORES": props.properties.find(
+          (p) => p.displayName === "N° AIREADORES"
         )?.displayValue,
-        'NOMBRE TA': props.properties.find((p) => p.displayName === 'NOMBRE TA')
+        "NOMBRE TA": props.properties.find((p) => p.displayName === "NOMBRE TA")
           ?.displayValue,
-        'DOC-ID': props.properties.find((p) => p.displayName === 'DOC-ID')
+        "DOC-ID": props.properties.find((p) => p.displayName === "DOC-ID")
           ?.displayValue,
       };
-    } else if (normalizedName.includes('compensacion')) {
+    } else if (normalizedName.includes("compensacion")) {
       // Sin tilde por la normalización
       selectedAttributes = {
-        'CAPACIDAD TCP': props.properties.find(
-          (p) => p.displayName === 'CAPACIDAD TCP'
+        "CAPACIDAD TCP": props.properties.find(
+          (p) => p.displayName === "CAPACIDAD TCP"
         )?.displayValue,
-        'NOMBRE TCP': props.properties.find(
-          (p) => p.displayName === 'NOMBRE TCP'
+        "NOMBRE TCP": props.properties.find(
+          (p) => p.displayName === "NOMBRE TCP"
         )?.displayValue,
-        'DOC-ID': props.properties.find((p) => p.displayName === 'DOC-ID')
+        "DOC-ID": props.properties.find((p) => p.displayName === "DOC-ID")
           ?.displayValue,
       };
-    } else if (normalizedName.includes('transformador')) {
+    } else if (normalizedName.includes("transformador")) {
       selectedAttributes = {
-        ID: props.properties.find((p) => p.displayName === 'ID')?.displayValue,
-        'NOMBRE TR': props.properties.find((p) => p.displayName === 'NOMBRE TR')
+        ID: props.properties.find((p) => p.displayName === "ID")?.displayValue,
+        "NOMBRE TR": props.properties.find((p) => p.displayName === "NOMBRE TR")
           ?.displayValue,
-        'CAPACIDAD TR': props.properties.find(
-          (p) => p.displayName === 'CAPACIDAD TR'
+        "CAPACIDAD TR": props.properties.find(
+          (p) => p.displayName === "CAPACIDAD TR"
         )?.displayValue,
-        PISCINA: props.properties.find((p) => p.displayName === 'PISCINA')
+        PISCINA: props.properties.find((p) => p.displayName === "PISCINA")
           ?.displayValue,
-        MARCA: props.properties.find((p) => p.displayName === 'MARCA')
+        MARCA: props.properties.find((p) => p.displayName === "MARCA")
           ?.displayValue,
       };
     }
@@ -89,34 +89,34 @@ export function setupSelectionHandler(viewer, callback) {
               ([key, value]) => `
               <tr>
                 <td class="attribute-key">${key}</td>
-                <td class="attribute-value">${value || 'N/A'}</td>
+                <td class="attribute-value">${value || "N/A"}</td>
               </tr>
             `
             )
-            .join('')}
+            .join("")}
         </tbody>
       </table>
     `;
       // Ocultar el mensaje de "No hay fichas técnicas disponibles" si hay atributos
-      noFichasDiv.style.display = 'none';
+      noFichasDiv.style.display = "none";
     } else {
       // Mostrar ambos mensajes si no hay atributos
       atributosDiv.innerHTML = `<h3 class="attributes-header">El elemento no tiene atributos</h3>`;
-      noFichasDiv.style.display = 'block';
+      noFichasDiv.style.display = "block";
     }
   }
 
   viewer.addEventListener(Autodesk.Viewing.SELECTION_CHANGED_EVENT, (event) => {
     const selection = event.dbIdArray;
 
-    const atributosDiv = document.getElementById('atributos');
-    const noFichasDiv = document.getElementById('no-fichas');
+    const atributosDiv = document.getElementById("atributos");
+    const noFichasDiv = document.getElementById("no-fichas");
 
     if (selection.length === 0) {
       // Mostrar ambos mensajes si no hay selección
       if (atributosDiv)
         atributosDiv.innerHTML = `<h3 class="attributes-header">El elemento no tiene atributos</h3>`;
-      if (noFichasDiv) noFichasDiv.style.display = 'block';
+      if (noFichasDiv) noFichasDiv.style.display = "block";
       return;
     }
 
@@ -126,7 +126,7 @@ export function setupSelectionHandler(viewer, callback) {
 
     viewer.getProperties(dbId, (props) => {
       const typeName = props.properties.find(
-        (prop) => prop.displayName === 'PRESENTAR'
+        (prop) => prop.displayName === "PRESENTAR"
       )?.displayValue;
 
       // Se verifica si el typeName está en la lista de objetos válidos
@@ -134,7 +134,7 @@ export function setupSelectionHandler(viewer, callback) {
         // Mostrar ambos mensajes si el objeto no es válido
         if (atributosDiv)
           atributosDiv.innerHTML = `<h3 class="attributes-header">El elemento no tiene atributos</h3>`;
-        if (noFichasDiv) noFichasDiv.style.display = 'block';
+        if (noFichasDiv) noFichasDiv.style.display = "block";
         clearTree();
         result2Global = null;
         currentDocId = null;
@@ -143,53 +143,102 @@ export function setupSelectionHandler(viewer, callback) {
 
       updateAttributesPanel(props); // Actualizar panel de atributos
 
-      console.log('pasa el filtro de type name');
+      console.log("pasa el filtro de type name");
 
-      const docId = props.properties.find(
-        (prop) => prop.displayName === 'DOC-ID'
-      )?.displayValue;
+      // Extraer objectType y searchAdditional antes de actualizar el panel
+      const elementName = props.name || "";
+      const normalizedName = elementName
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
 
-      console.log('docId', docId);
-      console.log('props', props);
-      console.log('props.name', props.name);
+      let docId, additionalFilter;
+      if (normalizedName.includes("poste")) {
+        docId = props.properties.find(
+          (prop) => prop.displayName === "DOC-ID"
+        )?.displayValue;
+        additionalFilter = null; // No se necesita filtro adicional para 'poste'
+      } else if (normalizedName.includes("aireadores")) {
+        docId = props.properties.find(
+          (prop) => prop.displayName === "DOC-ID"
+        )?.displayValue;
+        additionalFilter = props.properties.find(
+          (prop) => prop.displayName === "NOMBRE TA"
+        )?.displayValue;
+      } else if (normalizedName.includes("compensacion")) {
+        docId = props.properties.find(
+          (prop) => prop.displayName === "DOC-ID"
+        )?.displayValue;
+        additionalFilter = props.properties.find(
+          (prop) => prop.displayName === "NOMBRE TCP"
+        )?.displayValue;
+      } else if (normalizedName.includes("transformador")) {
+        docId = props.properties.find(
+          (prop) => prop.displayName === "DOC-ID"
+        )?.displayValue;
+        additionalFilter = props.properties.find(
+          (prop) => prop.displayName === "ID"
+        )?.displayValue;
+      }
 
-      if (docId) {
-        if (!currentDocId || !currentDocId.includes(docId)) {
-          alert(`Nuevo DOC-ID detectado: ${docId}`);
-          currentDocId = docId;
+      // Verificar si las propiedades existen
+      // Validar que al menos exista DOC-ID o additionalFilter
+      if (!docId && additionalFilter === undefined) {
+        console.error(
+          "No se encontró DOC-ID ni el filtro adicional para el objeto seleccionado."
+        );
+        return;
+      }
 
-          if (callback) callback(docId);
+      console.log("DOC-ID:", docId);
+      console.log("Filtro Adicional:", additionalFilter);
 
+      console.log("docId", docId);
+      console.log("props", props);
+      console.log("props.name", props.name);
+
+      if (docId || additionalFilter) {
+        if (!currentDocId || (docId && !currentDocId.includes(docId))) {
+          if (docId) {
+            alert(`Nuevo DOC-ID detectado: ${docId}`);
+            currentDocId = docId;
+          } else {
+            alert(`Nuevo filtro adicional detectado: ${additionalFilter}`);
+            currentDocId = additionalFilter; // O maneja el valor de otra forma
+          }
+      
+          if (callback) callback(docId, additionalFilter);
+      
           clearTree();
-
+      
           if (tree2ContainerGlobal && result2Global) {
-            // Activar el contenedor padre
-            const navItem = tree2ContainerGlobal.closest('.nav-item');
+            const navItem = tree2ContainerGlobal.closest(".nav-item");
             if (navItem) {
-              navItem.classList.add('active');
+              navItem.classList.add("active");
             }
-            spinner.style.display = 'block';
+            spinner.style.display = "block";
             renderTree({
               container: tree2ContainerGlobal,
               items: result2Global,
               viewer: viewer,
-              docId: docId, // Usa el nuevo DOC-ID
+              docId: docId,
+              additionalFilter: additionalFilter,
             }).finally(() => {
-              // Ocultar spinner y asegurar despliegue
-              spinner.style.display = 'none';
+              spinner.style.display = "none";
               if (navItem) {
-                navItem.classList.add('active');
-                navItem.querySelector('.nav-subitems').style.maxHeight = 'none';
+                navItem.classList.add("active");
+                navItem.querySelector(".nav-subitems").style.maxHeight = "none";
               }
             });
           } else {
-            console.warn('Datos de initTree no están listos aún.');
+            console.warn("Datos de initTree no están listos aún.");
           }
         }
       } else {
-        alert('El objeto seleccionado no tiene un DOC-ID para filtrar.');
+        alert("El objeto seleccionado no tiene un DOC-ID ni filtro adicional para filtrar.");
         currentDocId = null;
       }
+      
     });
   });
 }
@@ -198,24 +247,24 @@ export let currentDocId = null;
 
 function clearTree() {
   if (tree2ContainerGlobal) {
-    tree2ContainerGlobal.innerHTML = '';
+    tree2ContainerGlobal.innerHTML = "";
     // Mostrar mensaje de "No hay contenido" al limpiar
-    const noContentMsg = document.getElementById('no-fichas');
+    const noContentMsg = document.getElementById("no-fichas");
     if (noContentMsg) {
-      noContentMsg.style.display = 'block';
+      noContentMsg.style.display = "block";
     }
     // Resetear estado de renderedIds
-    tree2ContainerGlobal.dataset.renderedIds = '[]';
+    tree2ContainerGlobal.dataset.renderedIds = "[]";
   }
 }
 async function getAccessToken(callback) {
   try {
-    const resp = await fetch('/api/auth/token');
+    const resp = await fetch("/api/auth/token");
     if (!resp.ok) throw new Error(await resp.text());
     const { access_token, expires_in } = await resp.json();
     callback(access_token, expires_in);
   } catch (err) {
-    alert('Could not obtain access token. See the console for more details.');
+    alert("Could not obtain access token. See the console for more details.");
     console.error(err);
   }
 }
@@ -228,31 +277,12 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
   }
 
   load() {
-    console.log('CustomToolExtension se ha cargado');
-    
-    // Sobrescribir el comportamiento de autohighlight
-    const tool = this.viewer.toolController.getTool(
-      Autodesk.Viewing.TOOL.AUTOHIGHLIGHT
-    );
-    
-    const originalHandleAutoHighlight = tool.handleAutoHighlight.bind(tool);
-    tool.handleAutoHighlight = (event) => {
-      const result = originalHandleAutoHighlight(event);
-      if (result) {
-        const dbId = this.viewer.getHighlightedObject();
-        if (dbId !== null && !presentarDbIds.has(dbId)) {
-          this.viewer.clearHighlight();
-          return false;
-        }
-      }
-      return result;
-    };
-    
+    console.log("CustomToolExtension se ha cargado");
     return true;
   }
 
   unload() {
-    console.log('CustomToolExtension no se ha podido cargar');
+    console.log("CustomToolExtension no se ha podido cargar");
 
     // Limpiar recursos
     if (this._button) {
@@ -263,29 +293,29 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
 
   onToolbarCreated(toolbar) {
     // Creamos un grupo de botones adicional en el toolbar
-    this._group = new Autodesk.Viewing.UI.ControlGroup('custom-tool-group');
+    this._group = new Autodesk.Viewing.UI.ControlGroup("custom-tool-group");
 
     // Creamos el botón personalizado
-    this._button = new Autodesk.Viewing.UI.Button('my-custom-tool-button');
+    this._button = new Autodesk.Viewing.UI.Button("my-custom-tool-button");
     this._button.onClick = (ev) => {
       // Abrir el modal
       this.openModal();
       this.listObjects();
     };
-    this._button.setToolTip('Tabla de objetos');
+    this._button.setToolTip("Tabla de objetos");
 
     // Crear un elemento span para el ícono de Material Icons
-    const icon = document.createElement('span');
-    icon.className = 'material-icons'; // Clase de Material Icons
-    icon.innerText = 'table_chart'; // Nombre del ícono
-    icon.style.fontSize = '24px'; // Tamaño del ícono
-    icon.style.color = 'black';
+    const icon = document.createElement("span");
+    icon.className = "material-icons"; // Clase de Material Icons
+    icon.innerText = "table_chart"; // Nombre del ícono
+    icon.style.fontSize = "24px"; // Tamaño del ícono
+    icon.style.color = "black";
 
     // Aplicar estilos al contenedor del botón
-    this._button.container.style.display = 'flex'; // Usar flexbox para centrar
-    this._button.container.style.alignItems = 'center'; // Centrar verticalmente
-    this._button.container.style.justifyContent = 'center'; // Centrar horizontalmente
-    this._button.container.style.borderRadius = '4px'; // Bordes redondeados
+    this._button.container.style.display = "flex"; // Usar flexbox para centrar
+    this._button.container.style.alignItems = "center"; // Centrar verticalmente
+    this._button.container.style.justifyContent = "center"; // Centrar horizontalmente
+    this._button.container.style.borderRadius = "4px"; // Bordes redondeados
 
     // Agregar el ícono al botón
     this._button.container.appendChild(icon);
@@ -298,25 +328,25 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
   }
 
   openModal() {
-    this._modal = document.getElementById('customModal');
+    this._modal = document.getElementById("customModal");
     if (this._modal) {
-      this._modal.style.display = 'block';
+      this._modal.style.display = "block";
 
       // Agregar eventos para mover el modal
-      const header = this._modal.querySelector('div:first-child');
-      header.addEventListener('mousedown', (e) => this.startDrag(e));
-      document.addEventListener('mousemove', (e) => this.dragModal(e));
-      document.addEventListener('mouseup', () => this.stopDrag());
+      const header = this._modal.querySelector("div:first-child");
+      header.addEventListener("mousedown", (e) => this.startDrag(e));
+      document.addEventListener("mousemove", (e) => this.dragModal(e));
+      document.addEventListener("mouseup", () => this.stopDrag());
 
       // Agregar evento para cerrar el modal
-      const closeButton = this._modal.querySelector('#closeCustomModal');
-      closeButton.addEventListener('click', () => this.closeModal());
+      const closeButton = this._modal.querySelector("#closeCustomModal");
+      closeButton.addEventListener("click", () => this.closeModal());
     }
   }
 
   closeModal() {
     if (this._modal) {
-      this._modal.style.display = 'none';
+      this._modal.style.display = "none";
     }
   }
 
@@ -347,14 +377,14 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
 
   listObjects() {
     const viewer = this.viewer;
-    const tableBody = document.querySelector('#objectsTable tbody');
-    tableBody.innerHTML = ''; // Limpiar la tabla antes de llenarla
+    const tableBody = document.querySelector("#objectsTable tbody");
+    tableBody.innerHTML = ""; // Limpiar la tabla antes de llenarla
 
     // Obtener el árbol de objetos del modelo
     viewer.getObjectTree((tree) => {
       if (tree) {
         // Crear un expansible para "poste"
-        const posteRow = document.createElement('tr');
+        const posteRow = document.createElement("tr");
         posteRow.innerHTML = `
           <td style="padding: 8px; border-bottom: 1px solid #ccc;">
             poste
@@ -366,13 +396,13 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
         tableBody.appendChild(posteRow);
 
         // Agregar evento para mostrar la tabla de postes
-        const posteButton = posteRow.querySelector('.view-button');
-        posteButton.addEventListener('click', () => {
-          this.showFilteredTable(viewer, tree, 'poste');
+        const posteButton = posteRow.querySelector(".view-button");
+        posteButton.addEventListener("click", () => {
+          this.showFilteredTable(viewer, tree, "poste");
         });
 
         // Crear un expansible para "aireadores"
-        const aireadoresRow = document.createElement('tr');
+        const aireadoresRow = document.createElement("tr");
         aireadoresRow.innerHTML = `
           <td style="padding: 8px; border-bottom: 1px solid #ccc;">
             aireadores
@@ -384,13 +414,13 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
         tableBody.appendChild(aireadoresRow);
 
         // Agregar evento para mostrar la tabla de aireadores
-        const aireadoresButton = aireadoresRow.querySelector('.view-button');
-        aireadoresButton.addEventListener('click', () => {
-          this.showFilteredTable(viewer, tree, 'aireadores');
+        const aireadoresButton = aireadoresRow.querySelector(".view-button");
+        aireadoresButton.addEventListener("click", () => {
+          this.showFilteredTable(viewer, tree, "aireadores");
         });
 
         // Crear un expansible para "compensacion"
-        const compensacionRow = document.createElement('tr');
+        const compensacionRow = document.createElement("tr");
         compensacionRow.innerHTML = `
           <td style="padding: 8px; border-bottom: 1px solid #ccc;">
             compensacion
@@ -403,13 +433,13 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
 
         // Agregar evento para mostrar la tabla de compensacion
         const compensacionButton =
-          compensacionRow.querySelector('.view-button');
-        compensacionButton.addEventListener('click', () => {
-          this.showFilteredTable(viewer, tree, 'compensacion');
+          compensacionRow.querySelector(".view-button");
+        compensacionButton.addEventListener("click", () => {
+          this.showFilteredTable(viewer, tree, "compensacion");
         });
 
         // Crear un expansible para "transformador"
-        const transformadorRow = document.createElement('tr');
+        const transformadorRow = document.createElement("tr");
         transformadorRow.innerHTML = `
           <td style="padding: 8px; border-bottom: 1px solid #ccc;">
             transformador
@@ -422,12 +452,12 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
 
         // Agregar evento para mostrar la tabla de transformador
         const transformadorButton =
-          transformadorRow.querySelector('.view-button');
-        transformadorButton.addEventListener('click', () => {
-          this.showFilteredTable(viewer, tree, 'transformador');
+          transformadorRow.querySelector(".view-button");
+        transformadorButton.addEventListener("click", () => {
+          this.showFilteredTable(viewer, tree, "transformador");
         });
       } else {
-        console.warn('No se pudo obtener el árbol de objetos.');
+        console.warn("No se pudo obtener el árbol de objetos.");
       }
     });
   }
@@ -442,45 +472,45 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
     // Definir las cabeceras según el filtro
     let headers = [];
     switch (filter) {
-      case 'poste':
-        headers = ['POSTE', 'TIPO'];
+      case "poste":
+        headers = ["POSTE", "TIPO"];
         break;
-      case 'aireadores':
-        headers = ['NOMBRE', 'N° AIREADORES'];
+      case "aireadores":
+        headers = ["NOMBRE", "N° AIREADORES"];
         break;
-      case 'compensacion':
-        headers = ['NOMBRE', 'CAPACIDAD'];
+      case "compensacion":
+        headers = ["NOMBRE", "CAPACIDAD"];
         break;
-      case 'transformador':
+      case "transformador":
         headers = [
-          'ID',
-          'NOMBRE TRANSFORMADOR',
-          'CAPACIDAD KVA',
-          'PISCINA',
-          'MARCA',
+          "ID",
+          "NOMBRE TRANSFORMADOR",
+          "CAPACIDAD KVA",
+          "PISCINA",
+          "MARCA",
         ];
         break;
       default:
-        headers = ['POSTE', 'TIPO'];
+        headers = ["POSTE", "TIPO"];
     }
 
     // Crear el modal para la tabla filtrada
-    const filteredModal = document.createElement('div');
+    const filteredModal = document.createElement("div");
     filteredModal.id = `${filter}Modal`;
-    filteredModal.style.display = 'none';
-    filteredModal.style.position = 'fixed';
-    filteredModal.style.background = 'white';
-    filteredModal.style.border = '1px solid #ccc';
-    filteredModal.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-    filteredModal.style.zIndex = '1000';
-    filteredModal.style.width = '800px';
-    filteredModal.classList.add('resizable');
+    filteredModal.style.display = "none";
+    filteredModal.style.position = "fixed";
+    filteredModal.style.background = "white";
+    filteredModal.style.border = "1px solid #ccc";
+    filteredModal.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+    filteredModal.style.zIndex = "1000";
+    filteredModal.style.width = "800px";
+    filteredModal.classList.add("resizable");
 
     // Configuración de redimensionamiento
     let isResizing = false;
     let startX, startY, startWidth, startHeight;
 
-    filteredModal.addEventListener('mousedown', (e) => {
+    filteredModal.addEventListener("mousedown", (e) => {
       if (e.target === filteredModal) {
         isResizing = true;
         startX = e.clientX;
@@ -497,59 +527,59 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
       }
     });
 
-    document.addEventListener('mousemove', (e) => {
+    document.addEventListener("mousemove", (e) => {
       if (isResizing) {
         filteredModal.style.width = `${startWidth + e.clientX - startX}px`;
         filteredModal.style.height = `${startHeight + e.clientY - startY}px`;
       }
     });
 
-    document.addEventListener('mouseup', () => {
+    document.addEventListener("mouseup", () => {
       isResizing = false;
     });
 
     // Header del modal
-    const modalHeader = document.createElement('div');
-    modalHeader.style.background = '#f1f1f1';
-    modalHeader.style.padding = '10px';
-    modalHeader.style.cursor = 'move';
-    modalHeader.style.display = 'flex';
-    modalHeader.style.justifyContent = 'space-between';
-    modalHeader.style.alignItems = 'center';
+    const modalHeader = document.createElement("div");
+    modalHeader.style.background = "#f1f1f1";
+    modalHeader.style.padding = "10px";
+    modalHeader.style.cursor = "move";
+    modalHeader.style.display = "flex";
+    modalHeader.style.justifyContent = "space-between";
+    modalHeader.style.alignItems = "center";
 
-    const closeButton = document.createElement('span');
+    const closeButton = document.createElement("span");
     closeButton.id = `close${filter}Modal`;
-    closeButton.style.cursor = 'pointer';
-    closeButton.textContent = '×';
-    closeButton.style.fontWeight = '600';
-    closeButton.style.fontSize = '18px';
+    closeButton.style.cursor = "pointer";
+    closeButton.textContent = "×";
+    closeButton.style.fontWeight = "600";
+    closeButton.style.fontSize = "18px";
 
-    const modalTitle = document.createElement('h3');
-    modalTitle.style.margin = '0';
+    const modalTitle = document.createElement("h3");
+    modalTitle.style.margin = "0";
     modalTitle.textContent = `Tabla de ${filter}`;
 
     modalHeader.appendChild(modalTitle);
     modalHeader.appendChild(closeButton);
 
     // Cuerpo del modal
-    const modalBody = document.createElement('div');
-    modalBody.style.padding = '20px';
-    modalBody.style.maxHeight = '85vh';
-    modalBody.style.overflowY = 'auto';
+    const modalBody = document.createElement("div");
+    modalBody.style.padding = "20px";
+    modalBody.style.maxHeight = "85vh";
+    modalBody.style.overflowY = "auto";
 
     // Loading spinner
-    const spinnerContainer = document.createElement('div');
-    spinnerContainer.className = 'loading-spinner';
+    const spinnerContainer = document.createElement("div");
+    spinnerContainer.className = "loading-spinner";
     spinnerContainer.innerHTML = '<div class="spinner"></div>';
 
     // Tabla
-    const filteredTable = document.createElement('table');
+    const filteredTable = document.createElement("table");
     filteredTable.id = `${filter}Table`;
-    filteredTable.style.width = '100%';
-    filteredTable.style.borderCollapse = 'collapse';
-    filteredTable.style.display = 'none'; // Ocultar inicialmente
+    filteredTable.style.width = "100%";
+    filteredTable.style.borderCollapse = "collapse";
+    filteredTable.style.display = "none"; // Ocultar inicialmente
 
-    const tableHead = document.createElement('thead');
+    const tableHead = document.createElement("thead");
     tableHead.innerHTML = `
         <tr>
             ${headers
@@ -557,13 +587,13 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
                 (header) =>
                   `<th style="padding: 8px; border-bottom: 1px solid #ccc;">${header}</th>`
               )
-              .join('')}
+              .join("")}
             <th style="padding: 8px; border-bottom: 1px solid #ccc;">Acción</th>
         </tr>
     `;
 
-    const tableBody = document.createElement('tbody');
-    tableBody.innerHTML = ''; // Limpiar contenido inicial
+    const tableBody = document.createElement("tbody");
+    tableBody.innerHTML = ""; // Limpiar contenido inicial
 
     filteredTable.appendChild(tableHead);
     filteredTable.appendChild(tableBody);
@@ -579,43 +609,43 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
     let isDragging = false;
     let offsetX, offsetY;
 
-    modalHeader.addEventListener('mousedown', (e) => {
+    modalHeader.addEventListener("mousedown", (e) => {
       isDragging = true;
       offsetX = e.clientX - filteredModal.offsetLeft;
       offsetY = e.clientY - filteredModal.offsetTop;
     });
 
-    document.addEventListener('mousemove', (e) => {
+    document.addEventListener("mousemove", (e) => {
       if (isDragging) {
         filteredModal.style.left = `${e.clientX - offsetX}px`;
         filteredModal.style.top = `${e.clientY - offsetY}px`;
       }
     });
 
-    document.addEventListener('mouseup', () => {
+    document.addEventListener("mouseup", () => {
       isDragging = false;
     });
 
-    closeButton.addEventListener('click', () => {
+    closeButton.addEventListener("click", () => {
       filteredModal.remove();
     });
 
     try {
       // Mostrar estados iniciales
-      filteredModal.style.display = 'block';
-      spinnerContainer.style.display = 'flex';
+      filteredModal.style.display = "block";
+      spinnerContainer.style.display = "flex";
 
       // Cargar datos
       await this.fillFilteredTable(viewer, tree, tableBody, filter);
     } catch (error) {
-      console.error('Error al cargar datos:', error);
+      console.error("Error al cargar datos:", error);
       tableBody.innerHTML = `<tr><td colspan="${
         headers.length + 1
       }">Error cargando datos</td></tr>`;
     } finally {
       // Ocultar spinner y mostrar tabla
       spinnerContainer.remove();
-      filteredTable.style.display = 'table';
+      filteredTable.style.display = "table";
     }
   }
 
@@ -656,17 +686,17 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
           viewer.getProperties(childDbId, resolve);
         });
 
-        const childName = props.name || 'Sin nombre';
+        const childName = props.name || "Sin nombre";
         const normalizedName = childName
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
           .toLowerCase();
 
         const presentar = props.properties.find(
-          (prop) => prop.displayName === 'PRESENTAR'
+          (prop) => prop.displayName === "PRESENTAR"
         )?.displayValue;
 
-        if (normalizedName.includes(filter) && presentar === 'Si') {
+        if (normalizedName.includes(filter) && presentar === "Si") {
           // Extraer propiedades según el filtro
           const properties = this.extractProperties(props, filter);
 
@@ -694,14 +724,14 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
 
     // Generar filas en orden numérico
     for (const item of itemsCollector) {
-      const row = document.createElement('tr');
+      const row = document.createElement("tr");
       row.innerHTML = `
             ${item.properties
               .map(
                 (prop) =>
                   `<td style="padding: 8px; border-bottom: 1px solid #ccc;">${prop}</td>`
               )
-              .join('')}
+              .join("")}
             <td style="padding: 8px; border-bottom: 1px solid #ccc;">
                 <button class="view-button" data-dbid="${
                   item.dbId
@@ -710,14 +740,14 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
         `;
 
       // Agregar evento de clic
-      row.querySelector('.view-button').addEventListener('click', () => {
+      row.querySelector(".view-button").addEventListener("click", () => {
         this.focusOnObject(viewer, item.dbId);
         // Resaltar fila seleccionada
         // Cambiar clase a 'selected-row'
         container
-          .querySelectorAll('tr')
-          .forEach((r) => r.classList.remove('selected-row'));
-        row.classList.add('selected-row');
+          .querySelectorAll("tr")
+          .forEach((r) => r.classList.remove("selected-row"));
+        row.classList.add("selected-row");
       });
 
       container.appendChild(row);
@@ -727,42 +757,42 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
   // Función auxiliar para extraer propiedades
   extractProperties(props, filter) {
     switch (filter) {
-      case 'poste':
+      case "poste":
         return [
-          props.properties.find((p) => p.displayName === 'DOC-ID')
-            ?.displayValue || 'N/A',
-          props.properties.find((p) => p.displayName === 'Comments')
-            ?.displayValue || 'N/A',
+          props.properties.find((p) => p.displayName === "DOC-ID")
+            ?.displayValue || "N/A",
+          props.properties.find((p) => p.displayName === "Comments")
+            ?.displayValue || "N/A",
         ];
-      case 'aireadores':
+      case "aireadores":
         return [
-          props.properties.find((p) => p.displayName === 'NOMBRE TA')
-            ?.displayValue || 'N/A',
-          props.properties.find((p) => p.displayName === 'N° AIREADORES')
-            ?.displayValue || 'N/A',
+          props.properties.find((p) => p.displayName === "NOMBRE TA")
+            ?.displayValue || "N/A",
+          props.properties.find((p) => p.displayName === "N° AIREADORES")
+            ?.displayValue || "N/A",
         ];
-      case 'compensacion':
+      case "compensacion":
         return [
-          props.properties.find((p) => p.displayName === 'NOMBRE TCP')
-            ?.displayValue || 'N/A',
-          props.properties.find((p) => p.displayName === 'CAPACIDAD TCP')
-            ?.displayValue || 'N/A',
+          props.properties.find((p) => p.displayName === "NOMBRE TCP")
+            ?.displayValue || "N/A",
+          props.properties.find((p) => p.displayName === "CAPACIDAD TCP")
+            ?.displayValue || "N/A",
         ];
-      case 'transformador':
+      case "transformador":
         return [
-          props.properties.find((p) => p.displayName === 'ID')?.displayValue ||
-            'N/A',
-          props.properties.find((p) => p.displayName === 'NOMBRE TR')
-            ?.displayValue || 'N/A',
-          props.properties.find((p) => p.displayName === 'CAPACIDAD TR')
-            ?.displayValue || 'N/A',
-          props.properties.find((p) => p.displayName === 'PISCINA')
-            ?.displayValue || 'N/A',
-          props.properties.find((p) => p.displayName === 'MARCA')
-            ?.displayValue || 'N/A',
+          props.properties.find((p) => p.displayName === "ID")?.displayValue ||
+            "N/A",
+          props.properties.find((p) => p.displayName === "NOMBRE TR")
+            ?.displayValue || "N/A",
+          props.properties.find((p) => p.displayName === "CAPACIDAD TR")
+            ?.displayValue || "N/A",
+          props.properties.find((p) => p.displayName === "PISCINA")
+            ?.displayValue || "N/A",
+          props.properties.find((p) => p.displayName === "MARCA")
+            ?.displayValue || "N/A",
         ];
       default:
-        return ['N/A', 'N/A'];
+        return ["N/A", "N/A"];
     }
   }
 
@@ -770,17 +800,17 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
     const viewer = this.viewer;
 
     // Obtener el ícono de despliegue
-    const toggleIcon = row.querySelector('.toggle-icon');
+    const toggleIcon = row.querySelector(".toggle-icon");
 
     // Alternar la clase 'expanded'
-    toggleIcon.classList.toggle('expanded');
+    toggleIcon.classList.toggle("expanded");
 
     // Verificar si ya se han cargado los hijos
     if (row.dataset.childrenLoaded) {
       // Si ya están cargados, solo alternar la visibilidad
       const childrenContainer = row.nextElementSibling;
       childrenContainer.style.display =
-        childrenContainer.style.display === 'none' ? 'block' : 'none';
+        childrenContainer.style.display === "none" ? "block" : "none";
       return;
     }
 
@@ -788,32 +818,32 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
     row.dataset.childrenLoaded = true;
 
     // Crear un contenedor para los hijos
-    const childrenContainer = document.createElement('tr');
+    const childrenContainer = document.createElement("tr");
     childrenContainer.innerHTML = `
       <td colspan="3" style="padding-left: 20px;">
         <div class="children-container"></div>
       </td>
     `;
-    childrenContainer.style.display = 'none'; // Ocultar inicialmente
+    childrenContainer.style.display = "none"; // Ocultar inicialmente
 
     // Insertar el contenedor de hijos después de la fila actual
     row.parentNode.insertBefore(childrenContainer, row.nextSibling);
 
     // Obtener los hijos del objeto actual
-    const childrenDiv = childrenContainer.querySelector('.children-container');
+    const childrenDiv = childrenContainer.querySelector(".children-container");
     tree.enumNodeChildren(dbId, (childDbId) => {
       viewer.getProperties(childDbId, (childProps) => {
-        const childName = childProps.name || 'Sin nombre';
+        const childName = childProps.name || "Sin nombre";
         const hasChildren = tree.getChildCount(childDbId) > 0; // Verificar si tiene hijos
 
         // Crear una fila para el hijo
-        const childRow = document.createElement('div');
+        const childRow = document.createElement("div");
         childRow.innerHTML = `
           <div style="padding: 4px;">
             ${
               hasChildren
                 ? '<span class="toggle-icon" style="cursor: pointer; margin-right: 8px;">▶</span>'
-                : ''
+                : ""
             }
             <span>${childName}</span>
             <button class="view-button" data-dbid="${childDbId}" style="margin-left: 10px;">Ver</button>
@@ -823,22 +853,22 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
 
         // Agregar evento para expandir/contraer subhijos (solo si tiene hijos)
         if (hasChildren) {
-          const childToggleIcon = childRow.querySelector('.toggle-icon');
-          childToggleIcon.addEventListener('click', () => {
+          const childToggleIcon = childRow.querySelector(".toggle-icon");
+          childToggleIcon.addEventListener("click", () => {
             this.toggleChildren(childRow, childDbId, tree);
           });
         }
 
         // Agregar evento para centrar el objeto en el visor
-        const viewButton = childRow.querySelector('.view-button');
-        viewButton.addEventListener('click', () => {
+        const viewButton = childRow.querySelector(".view-button");
+        viewButton.addEventListener("click", () => {
           this.focusOnObject(viewer, childDbId);
         });
       });
     });
 
     // Mostrar el contenedor de hijos
-    childrenContainer.style.display = 'block';
+    childrenContainer.style.display = "block";
   }
 
   focusOnObject(viewer, dbId) {
@@ -856,25 +886,32 @@ class CustomToolExtension extends Autodesk.Viewing.Extension {
 
 // Registrar la nueva extensión
 Autodesk.Viewing.theExtensionManager.registerExtension(
-  'CustomToolExtension',
+  "CustomToolExtension",
   CustomToolExtension
 );
 
 export function initViewer(container) {
   return new Promise(function (resolve, reject) {
     Autodesk.Viewing.Initializer(
-      { env: 'AutodeskProduction', getAccessToken },
+      { env: "AutodeskProduction", getAccessToken },
       function () {
         const config = {
           extensions: [
-            'Autodesk.DocumentBrowser',
-            'Autodesk.Viewing.MarkupsCore',
-            'CustomToolExtension',
+            "Autodesk.DocumentBrowser",
+            "Autodesk.Viewing.MarkupsCore",
+            "CustomToolExtension",
           ],
         };
         const viewer = new Autodesk.Viewing.GuiViewer3D(container, config);
         viewer.start();
-        viewer.setTheme('light-theme');
+        viewer.setTheme("light-theme");
+
+        // Desactivar eventos de puntero en el canvas
+        const canvas = viewer.canvas;
+        if (canvas) {
+          canvas.style.pointerEvents = "none";
+        }
+
         resolve(viewer);
       }
     );
@@ -898,28 +935,23 @@ export function loadModel(viewer, urn) {
       });
   }
   function onDocumentLoadFailure(code, message) {
-    alert('Could not load model. See console for more details.');
+    alert("Could not load model. See console for more details.");
     console.error(message);
   }
   Autodesk.Viewing.Document.load(
-    'urn:' + urn,
+    "urn:" + urn,
     onDocumentLoadSuccess,
     onDocumentLoadFailure
   );
 }
 
-export let presentarDbIds = new Set();
-
 function filterObjectsByPresentar(viewer) {
-
-  presentarDbIds.clear();
-
-  const validTypePresentar = ['Si'];
+  const validTypePresentar = ["Si"];
   const instanceTree = viewer.model.getData().instanceTree;
   const fragList = viewer.model.getFragmentList();
 
   // Eliminamos etiquetas anteriores
-  const existingLabels = viewer.container.querySelectorAll('.presentar-label');
+  const existingLabels = viewer.container.querySelectorAll(".presentar-label");
   existingLabels.forEach((label) => label.remove());
   viewer.clearThemingColors(viewer.model);
 
@@ -928,17 +960,17 @@ function filterObjectsByPresentar(viewer) {
     Number
   );
 
-  // Obtenemos propiedades en bloque para evitar multiples peticiones
+  // Obtenemos propiedades en bloque para evitar múltiples peticiones
   viewer.model.getBulkProperties(
     dbIdArray,
     [
-      'PRESENTAR',
-      'DOC-ID',
-      'NOMBRE TA',
-      'NOMBRE TCP',
-      'NOMBRE TR',
-      'Type Name',
-      'name',
+      "PRESENTAR",
+      "DOC-ID",
+      "NOMBRE TA",
+      "NOMBRE TCP",
+      "NOMBRE TR",
+      "Type Name",
+      "name",
     ],
     (results) => {
       const objectsToShow = [];
@@ -946,99 +978,98 @@ function filterObjectsByPresentar(viewer) {
 
       results.forEach((props) => {
         const presentar = props.properties.find(
-          (p) => p.displayName === 'PRESENTAR'
+          (p) => p.displayName === "PRESENTAR"
         )?.displayValue;
 
         // Clasificar objetos en dos grupos
         if (validTypePresentar.includes(presentar)) {
-          if (validTypePresentar.includes(presentar)) {
-            presentarDbIds.add(props.dbId);
-            console.log('props presentar', props);
-            const docId =
-              props.properties.find((p) => p.displayName === 'DOC-ID')
-                ?.displayValue || 'Sin DOC-ID';
-            const nombreTA =
-              props.properties.find((p) => p.displayName === 'NOMBRE TA')
-                ?.displayValue || 'Sin NOMBRE TA';
-            const nombreTCP =
-              props.properties.find((p) => p.displayName === 'NOMBRE TCP')
-                ?.displayValue || 'Sin NOMBRE TCP';
-            const nombreTR =
-              props.properties.find((p) => p.displayName === 'NOMBRE TR')
-                ?.displayValue || 'Sin NOMBRE TR';
-            let box = new THREE.Box3();
+          // Objeto permitido
+          const docId =
+            props.properties.find((p) => p.displayName === "DOC-ID")
+              ?.displayValue || "Sin DOC-ID";
+          const nombreTA =
+            props.properties.find((p) => p.displayName === "NOMBRE TA")
+              ?.displayValue || "Sin NOMBRE TA";
+          const nombreTCP =
+            props.properties.find((p) => p.displayName === "NOMBRE TCP")
+              ?.displayValue || "Sin NOMBRE TCP";
+          const nombreTR =
+            props.properties.find((p) => p.displayName === "NOMBRE TR")
+              ?.displayValue || "Sin NOMBRE TR";
+          let box = new THREE.Box3();
 
-            const elementName = props.name || '';
-            const normalizedName = elementName
-              .normalize('NFD') // Normalizamos tildes
-              .replace(/[\u0300-\u036f]/g, '') // Eliminamos diacríticos
-              .toLowerCase();
+          const elementName = props.name || "";
+          const normalizedName = elementName
+            .normalize("NFD") // Normalizamos tildes
+            .replace(/[\u0300-\u036f]/g, "") // Eliminamos diacríticos
+            .toLowerCase();
 
-            instanceTree.enumNodeFragments(props.dbId, (fragId) => {
-              let fragBox = new THREE.Box3();
-              fragList.getWorldBounds(fragId, fragBox);
-              box.union(fragBox);
-            });
+          instanceTree.enumNodeFragments(props.dbId, (fragId) => {
+            let fragBox = new THREE.Box3();
+            fragList.getWorldBounds(fragId, fragBox);
+            box.union(fragBox);
+          });
 
-            if (!box.isEmpty()) {
-              let labelText = '';
+          if (!box.isEmpty()) {
+            let labelText = "";
 
-              if (normalizedName.includes('poste')) {
-                labelText = docId;
-              } else if (normalizedName.includes('aireadores')) {
-                labelText = nombreTA;
-              } else if (normalizedName.includes('compensacion')) {
-                labelText = nombreTCP;
-              } else if (normalizedName.includes('transformador')) {
-                labelText = nombreTR;
-              }
-              objectsToShow.push({
-                dbId: props.dbId,
-                center: box.getCenter(new THREE.Vector3()),
-                boxSize: box.getSize(new THREE.Vector3()),
-                label: createLabel(labelText, viewer),
-              });
+            if (normalizedName.includes("poste")) {
+              labelText = docId;
+            } else if (normalizedName.includes("aireadores")) {
+              labelText = nombreTA;
+            } else if (normalizedName.includes("compensacion")) {
+              labelText = nombreTCP;
+            } else if (normalizedName.includes("transformador")) {
+              labelText = nombreTR;
             }
+            objectsToShow.push({
+              dbId: props.dbId,
+              center: box.getCenter(new THREE.Vector3()),
+              boxSize: box.getSize(new THREE.Vector3()),
+              label: createLabel(labelText, viewer),
+            });
           }
         } else {
-          objectsToDim.push(props.dbId); // Almacenar dbIds para atenuar
+          // Objeto sin la propiedad "Si"
+          objectsToDim.push(props.dbId);
         }
       });
 
       // Aplicar color atenuado a los objetos sin PRESENTAR = Si
-      const dimColor = new THREE.Vector4(0.6, 0.6, 0.6, 0.52); // RGBA (opacidad 30%)
+      // (si bien se aplica un color dim, lo que haremos es evitar que se resalten
+      // mediante eventos de interacción)
+      const dimColor = new THREE.Vector4(0.6, 0.6, 0.6, 0.52);
       objectsToDim.forEach((dbId) => {
         viewer.setThemingColor(dbId, dimColor, viewer.model);
       });
 
       // Aplicar color vibrante a los objetos con PRESENTAR = 'Si'
-      const vibrantColor = new THREE.Vector4(0.95, 0.95, 0.95, 1); // Ejemplo: rojo brillante (puedes elegir otro color)
+      const vibrantColor = new THREE.Vector4(0.95, 0.95, 0.95, 1);
       objectsToShow.forEach((obj) => {
         viewer.setThemingColor(obj.dbId, vibrantColor, viewer.model);
       });
 
       function createLabel(text, viewer) {
-        const label = document.createElement('div');
-        label.className = 'presentar-label';
+        const label = document.createElement("div");
+        label.className = "presentar-label";
         label.textContent = text;
-        label.style.position = 'absolute';
-        label.style.color = 'black';
-        label.style.border = '2px solid rgba(255, 255, 255, 0.5)';
-        label.style.padding = '4px 6px';
-        label.style.borderRadius = '50%';
-        label.style.pointerEvents = 'none';
-        label.style.fontSize = '0.85rem';
-        label.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+        label.style.position = "absolute";
+        label.style.color = "black";
+        label.style.border = "2px solid rgba(255, 255, 255, 0.5)";
+        label.style.padding = "4px 6px";
+        label.style.borderRadius = "50%";
+        label.style.pointerEvents = "none";
+        label.style.fontSize = "0.85rem";
+        label.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
         label.style.boxShadow =
-          'inset 0 0 10px rgba(255, 255, 255, 0.3), 0 4px 8px rgba(0, 0, 0, 0.2)';
-        label.style.display = 'none';
+          "inset 0 0 10px rgba(255, 255, 255, 0.3), 0 4px 8px rgba(0, 0, 0, 0.2)";
+        label.style.display = "none";
 
         viewer.container.appendChild(label);
         return label;
       }
 
       function updateLabels() {
-        const camera = viewer.getCamera();
         const viewerWidth = viewer.container.clientWidth;
         const viewerHeight = viewer.container.clientHeight;
 
@@ -1055,11 +1086,11 @@ function filterObjectsByPresentar(viewer) {
             screenWidth > viewerWidth * 0.03 ||
             screenHeight > viewerHeight * 0.03
           ) {
-            obj.label.style.display = 'block';
+            obj.label.style.display = "block";
             obj.label.style.left = `${screenPos.x}px`;
             obj.label.style.top = `${screenPos.y}px`;
           } else {
-            obj.label.style.display = 'none';
+            obj.label.style.display = "none";
           }
         });
       }
@@ -1069,7 +1100,6 @@ function filterObjectsByPresentar(viewer) {
       function throttledUpdateLabels() {
         const now = performance.now();
         if (now - lastUpdate > 30) {
-          // 30ms entre actualizaciones
           lastUpdate = now;
           updateLabels();
         }
@@ -1082,46 +1112,72 @@ function filterObjectsByPresentar(viewer) {
 
       // Llamada inicial
       updateLabels();
+
+      // --- NUEVO: Filtrado de interacción para objetos sin "PRESENTAR = Si" ---
+
+      // Arreglo de dbIds permitidos (con PRESENTAR = 'Si')
+      const allowedIds = objectsToShow.map((obj) => obj.dbId);
+
+      // Interceptamos la selección para descartar objetos no permitidos
+      viewer.addEventListener(
+        Autodesk.Viewing.SELECTION_CHANGED_EVENT,
+        (event) => {
+          // Si la selección incluye algún objeto que no esté en allowedIds, la limpiamos
+          const filtered = event.dbIdArray.filter((id) =>
+            allowedIds.includes(id)
+          );
+          if (filtered.length !== event.dbIdArray.length) {
+            viewer.clearSelection();
+          }
+        }
+      );
+
+      // Interceptamos el hover para que si el objeto sobre el que se pasa el mouse no es permitido, se limpie el resaltado
+      viewer.addEventListener(Autodesk.Viewing.HOVER_EVENT, (event) => {
+        if (event.dbId && !allowedIds.includes(event.dbId)) {
+          viewer.impl.clearHighlight();
+        }
+      });
     }
   );
 }
 
 // Abrir modal
 function openModal() {
-  document.getElementById('modelModal').style.display = 'block';
+  document.getElementById("modelModal").style.display = "block";
 }
 
 // Cerrar modal
 function closeModal() {
-  document.getElementById('modelModal').style.display = 'none';
+  document.getElementById("modelModal").style.display = "none";
 }
 
 export function loadModel2(viewer, urn) {
-  const thumbnailsContainer = document.getElementById('pdfThumbnails');
-  
-  document.querySelector('#closeModalBtn').addEventListener('click', () => {
+  const thumbnailsContainer = document.getElementById("pdfThumbnails");
+
+  document.querySelector("#closeModalBtn").addEventListener("click", () => {
     closeModal();
-    thumbnailsContainer.innerHTML = ''; // Limpiar miniaturas al cerrar
+    thumbnailsContainer.innerHTML = ""; // Limpiar miniaturas al cerrar
   });
 
   // Evento de click en botón de cierre
   document
-    .querySelector('#closeModalBtn')
-    .addEventListener('click', closeModal);
+    .querySelector("#closeModalBtn")
+    .addEventListener("click", closeModal);
 
   function onDocumentLoadSuccess(doc) {
     const rootItem = doc.getRoot();
-    const pdfPages = rootItem.search({ type: 'geometry', role: '2d' }, true);
+    const pdfPages = rootItem.search({ type: "geometry", role: "2d" }, true);
 
-    console.log('Este PDF tiene', pdfPages.length, 'páginas.');
-    console.log('PDF', pdfPages);
+    console.log("Este PDF tiene", pdfPages.length, "páginas.");
+    console.log("PDF", pdfPages);
 
     // Abre el modal (tal como ya lo haces)
     openModal();
 
     Autodesk.Viewing.Initializer(
       {
-        env: 'AutodeskProduction',
+        env: "AutodeskProduction",
         getAccessToken,
       },
       function () {
@@ -1132,7 +1188,7 @@ export function loadModel2(viewer, urn) {
 
         // Creamos el visor en tu contenedor
         viewer = new Autodesk.Viewing.GuiViewer3D(
-          document.getElementById('viewerContainer'),
+          document.getElementById("viewerContainer"),
           options
         );
         viewer.start();
@@ -1142,9 +1198,7 @@ export function loadModel2(viewer, urn) {
           .loadDocumentNode(doc, doc.getRoot().getDefaultGeometry())
           .then(() => {
             // Aquí forzamos la visibilidad del DocumentBrowser si es que no aparece automáticamente:
-            viewer
-              .loadExtension('Autodesk.DocumentBrowser')
-              
+            viewer.loadExtension("Autodesk.DocumentBrowser");
 
             // Llamamos a la función para capturar las imágenes de cada página
             capturePdfPages(doc, viewer);
@@ -1154,13 +1208,13 @@ export function loadModel2(viewer, urn) {
   }
 
   function onDocumentLoadFailure(code, message) {
-    alert('Could not load model. See console for more details.');
+    alert("Could not load model. See console for more details.");
     console.error(message);
   }
 
   // Cargamos el modelo desde Autodesk Forge
   Autodesk.Viewing.Document.load(
-    'urn:' + urn,
+    "urn:" + urn,
     onDocumentLoadSuccess,
     onDocumentLoadFailure
   );
@@ -1170,9 +1224,9 @@ export function loadModel2(viewer, urn) {
 // En viewer.js, modificar la función capturePdfPages
 function capturePdfPages(doc, viewer) {
   const rootItem = doc.getRoot();
-  const pdfPages = rootItem.search({ type: 'geometry', role: '2d' }, true);
-  const thumbnailsContainer = document.getElementById('pdfThumbnails');
-  
+  const pdfPages = rootItem.search({ type: "geometry", role: "2d" }, true);
+  const thumbnailsContainer = document.getElementById("pdfThumbnails");
+
   let images = [];
 
   // Función para capturar una página específica
@@ -1180,10 +1234,10 @@ function capturePdfPages(doc, viewer) {
     return viewer.loadDocumentNode(doc, page).then(() => {
       return new Promise((resolve) => {
         viewer.getScreenShot(200, 200, (imageData) => {
-          images.push({ 
-            page: index + 1, 
+          images.push({
+            page: index + 1,
             image: imageData,
-            node: page
+            node: page,
           });
           resolve();
         });
@@ -1194,21 +1248,21 @@ function capturePdfPages(doc, viewer) {
   // Capturar todas las páginas en paralelo
   Promise.all(pdfPages.map((page, index) => capturePage(page, index)))
     .then(() => {
-      console.log('Captura de todas las páginas completada.');
+      console.log("Captura de todas las páginas completada.");
       renderThumbnails(images);
     })
     .catch((error) => {
-      console.error('Error al capturar las páginas:', error);
+      console.error("Error al capturar las páginas:", error);
     });
 
   function renderThumbnails(images) {
-    thumbnailsContainer.innerHTML = '';
+    thumbnailsContainer.innerHTML = "";
     images.forEach((img, index) => {
-      const thumbnail = document.createElement('div');
-      thumbnail.style.position = 'relative';
-      thumbnail.style.marginBottom = '10px';
-      thumbnail.style.cursor = 'pointer';
-      thumbnail.style.border = '2px solid transparent';
+      const thumbnail = document.createElement("div");
+      thumbnail.style.position = "relative";
+      thumbnail.style.marginBottom = "10px";
+      thumbnail.style.cursor = "pointer";
+      thumbnail.style.border = "2px solid transparent";
       thumbnail.innerHTML = `
         <img src="${img.image}" 
              style="width: 100%; 
@@ -1224,21 +1278,21 @@ function capturePdfPages(doc, viewer) {
           ${index + 1}
         </div>
       `;
-      
-      thumbnail.addEventListener('click', () => {
+
+      thumbnail.addEventListener("click", () => {
         // Remover borde de todas las miniaturas
-        document.querySelectorAll('#pdfThumbnails div').forEach(t => {
-          t.style.borderColor = 'transparent';
+        document.querySelectorAll("#pdfThumbnails div").forEach((t) => {
+          t.style.borderColor = "transparent";
         });
         // Resaltar miniatura seleccionada
-        thumbnail.style.borderColor = '#2196F3';
+        thumbnail.style.borderColor = "#2196F3";
         // Cargar la página seleccionada
         viewer.loadDocumentNode(doc, img.node);
       });
-      
+
       thumbnailsContainer.appendChild(thumbnail);
     });
-    
+
     // Seleccionar primera miniatura por defecto
     if (images.length > 0) {
       thumbnailsContainer.firstChild.click();
