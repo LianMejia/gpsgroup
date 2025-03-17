@@ -535,7 +535,7 @@ table tr:last-child td {
 }
 
 .selected-row {
-  /* background-color: #e0f7fa; */ /* Color de fondo para la fila seleccionada */
+  /* background-color: #e0f7fa; / / Color de fondo para la fila seleccionada */
   border-bottom: 2px solid #007bff; /* Subrayado azul */
 }
 
