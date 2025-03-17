@@ -540,7 +540,7 @@ table tr:last-child td {
 }
 
 /* Icon toolbar */
-
+.adsk-viewing-viewer #toolbar-propertiesTool{display:none!important}
 
 .loading-spinner {
   display: flex;
